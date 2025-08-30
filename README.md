@@ -1,4 +1,6 @@
 ES-PI2-2025-T3-G14 - NotaDez
+
+
 👥 Integrantes do Grupo
 
 LUCAS ORMENESE ALTIERI - RA24005497
