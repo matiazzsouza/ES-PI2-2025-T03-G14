@@ -137,3 +137,9 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Adicione estas linhas NO FINAL do seu .gitignore
+# TypeScript compiled files
+*.js
+*.js.map
+*.d.ts
