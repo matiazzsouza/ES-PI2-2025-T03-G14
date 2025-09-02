@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotaDez - Página Inicial</title>
+
+    <!-- Link para CSS estático (vai funcionar graças ao express.static) -->
+    <link rel="stylesheet" href="/css/styles.css">
+    
+</head>
+<body>
+    <div class="container">
+        <h1>NotaDez 🎓</h1>
+        <p>Sistema de Gerenciamento de Notas</p>
+        <p><strong>Status do Servidor:</strong> ✅ Online</p>
+        <p><strong>Versão:</strong> <%= versao %></p>
+        <a href="/health">Ver Health Check da API (JSON)</a>
+    </div>
+</body>
+</html>

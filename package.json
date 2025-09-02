@@ -1,0 +1,47 @@
+{
+  "name": "es-pi2-2025-t03-g14",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  
+  "scripts": {  
+  "dev": "ts-node src/server.ts",
+  "build": "tsc",
+  "start": "node dist/app.js",
+  "test": "echo \"Error: no test specified\" && exit 1"
+  },
+
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matiazzsouza/ES-PI2-2025-T03-G14.git"
+  },
+
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/matiazzsouza/ES-PI2-2025-T03-G14/issues"
+  },
+
+  "homepage": "https://github.com/matiazzsouza/ES-PI2-2025-T03-G14#readme",
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.3",
+    "@types/express-session": "^1.18.2",
+    "@types/node": "^24.3.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.2"
+  },
+
+
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "mysql2": "^3.14.4"
+  }
+
+
+  
+}
