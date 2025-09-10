@@ -1,93 +1,130 @@
+// src/server.ts
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
-import path from 'path'; // Importação NECESSÁRIA para o path
+import path from "path";
+import bcrypt from "bcrypt";
+import { pool } from './database/database';
+import { testConnection } from './database/testConnection';
 
-// 2. CRIAR APLICAÇÃO EXPRESS
 const app = express();
+const port = process.env.PORT || 3000;
 
-// 3. DEFINIR PORTA
-const port = 3000;
+// ================= INICIALIZAÇÃO =================
+async function startServer() {
+  const ok = await testConnection();
+  if (!ok) {
+    console.error("❌ Não foi possível conectar ao banco de dados. Servidor não iniciado.");
+    process.exit(1);
+  }
 
-// ✅ CONFIGURAÇÃO DO EJS (ADICIONADO)
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+  // Configuração EJS
+  app.set("view engine", "ejs");
+  app.set("views", path.join(__dirname, "views"));
 
-// 4. MIDDLEWARE PARA ENTENDER JSON
-app.use(express.json());
+  // Middleware
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ MIDDLEWARE PARA ARQUIVOS ESTÁTICOS (ADICIONADO)
-app.use(express.static('src/public'));
+  // ================= ROTAS ==================
 
-// ✅ MIDDLEWARE PARA FORMULÁRIOS (ADICIONADO)
-app.use(express.urlencoded({ extended: true }));
-
-// 5. MIDDLEWARE DE LOG (para ver requests no terminal)
-app.use((req, res, next) => {
-  console.log(`📥 ${new Date().toISOString()} - ${req.method} ${req.path}`);
-  next();
-});
-
-// 6. ROTA PRINCIPAL (RAIZ)
-app.get("/", (req, res) => {
-  res.json({ 
-    message: "✅ API NotaDez funcionando!",
-    timestamp: new Date().toISOString(),
-    versao: "1.0.0",
-    status: "sucesso"
+  // Página inicial redireciona para login
+  app.get("/", (req, res) => {
+    res.redirect("/auth/login");
   });
-});
 
-// 7. ROTA DE HEALTH CHECK (saúde do servidor)
-app.get("/health", (req, res) => {
-  res.json({ 
-    status: "OK",
-    environment: process.env.NODE_ENV || "development",
-    database: "MySQL",
-    framework: "Express.js"
+  // --- LOGIN ---
+  app.get("/auth/login", (req, res) => {
+    res.render("auth/login", { title: "Login", error: null });
   });
-});
 
-// ✅ NOVA ROTA PARA A VIEW EJS (ADICIONADA)
+  app.post("/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      const [rows]: any = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+      const user = rows[0];
+
+      if (!user) {
+        return res.render("auth/login", { title: "Login", error: "Usuário não encontrado!" });
+      }
+
+      const validPassword = await bcrypt.compare(password, user.password_hash);
+      if (!validPassword) {
+        return res.render("auth/login", { title: "Login", error: "Senha incorreta!" });
+      }
+
+      res.send(`Bem-vindo ${user.name}!`);
+    } catch (err) {
+      console.error(err);
+      res.render("auth/login", { title: "Login", error: "Erro no login!" });
+    }
+  });
+
+  // --- REGISTRO ---
+  app.get("/auth/register", (req, res) => {
+    res.render("auth/register", { title: "Cadastro", error: null });
+  });
+
+  app.post("/auth/register", async (req, res) => {
+    try {
+      const { name, email, password } = req.body;
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      await pool.query(
+        "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+        [name, email, hashedPassword]
+      );
+
+      res.redirect("/auth/login");
+    } catch (err: any) {
+      if (err.code === "ER_DUP_ENTRY") {
+        return res.render("auth/register", { title: "Cadastro", error: "Email já cadastrado!" });
+      }
+      console.error(err);
+      res.render("auth/register", { title: "Cadastro", error: "Erro no cadastro!" });
+    }
+  });
+
+// --- PÁGINA WEB ---
 app.get("/web", (req, res) => {
-  res.render('notes/index', { 
-    title: 'Página de Notas',
-    versao: '1.0.0'
+  res.render("auth/login", { title: "Página Web", error: null });
+});
+
+
+  // --- HEALTH CHECK ---
+  app.get("/health", (req, res) => {
+    res.json({
+      status: "OK",
+      environment: process.env.NODE_ENV || "development",
+      database: "MySQL",
+      framework: "Express.js",
+    });
   });
-});
 
-// 8. ROTA DE EXEMPLO PARA PROFESSORES
-app.get("/api/professores", (req, res) => {
-  res.json({
-    data: [],
-    message: "Endpoint de professores funcionando!",
-    total: 0
+  // --- ROTAS NÃO ENCONTRADAS ---
+  app.use((req, res) => {
+    res.status(404).json({
+      error: "Rota não encontrada",
+      message: `A rota ${req.method} ${req.path} não existe`,
+      suggest: "Verifique a documentação da API",
+    });
   });
-});
 
-// 9. INICIAR SERVIDOR
-app.listen(port, () => {
-  console.log("====================================");
-  console.log("🚀 SERVIDOR NOTADEZ INICIADO!");
-  console.log("📡 URL: http://localhost:" + port);
-  console.log("🩺 Health: http://localhost:" + port + "/health");
-  console.log("⭐ API Root: http://localhost:" + port + "/");
-  console.log("👨‍🏫 Professores: http://localhost:" + port + "/api/professores");
-  console.log("🌐 Página Web: http://localhost:" + port + "/web"); // ✅ LINHA ADICIONADA
-  console.log("====================================");
-  console.log("⚠️  Pressione Ctrl + C para parar o servidor");
-  console.log("====================================");
-});
-
-// 10. TRATAMENTO DE ERROS GLOBAIS
-process.on("SIGINT", () => {
-  console.log("\n🛑 Servidor encerrado pelo usuário");
-  process.exit(0);
-});
-
-// 11. TRATAMENTO DE ROTAS NÃO ENCONTRADAS (404)
-app.use((req, res) => {
-  res.status(404).json({
-    error: "Rota não encontrada",
-    message: `A rota ${req.method} ${req.path} não existe`,
-    suggest: "Verifique a documentação da API"
+  // ================= INICIA SERVIDOR =================
+  app.listen(port, () => {
+    console.log("====================================");
+    console.log("🚀 SERVIDOR NOTADEZ INICIADO!");
+    console.log(`📡 URL: http://localhost:${port}`);
+    console.log(`🩺 Health: http://localhost:${port}/health`);
+    console.log(`🔑 Login: http://localhost:${port}/auth/login`);
+    console.log(`⭐ Cadastro: http://localhost:${port}/auth/register`);
+    console.log(`🌐 Página Web: http://localhost:${port}/web`);
+    console.log("====================================");
   });
-});
+}
+
+// Executa
+startServer();
