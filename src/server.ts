@@ -12,6 +12,7 @@ import { testConnection } from './database/testConnection';
 const app = express();
 const port = process.env.PORT || 3000;
 
+
 // ================= INICIALIZAÇÃO =================
 async function startServer() {
   const ok = await testConnection();
@@ -29,7 +30,7 @@ async function startServer() {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.static(path.join(__dirname, "public")));
 
-  // ... resto do código permanece igual
+  
   // ================= ROTAS ==================
 
   // Página inicial redireciona para login
@@ -66,11 +67,11 @@ async function startServer() {
   });
 
   // --- REGISTRO ---
-  app.get("/auth/register", (req, res) => {
-    res.render("auth/register", { title: "Cadastro", error: null });
+  app.get("/auth/registro", (req, res) => {
+    res.render("auth/registro", { title: "Cadastro", error: null });
   });
 
-  app.post("/auth/register", async (req, res) => {
+  app.post("/auth/registro", async (req, res) => {
     try {
       const { name, email, password } = req.body;
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -83,10 +84,10 @@ async function startServer() {
       res.redirect("/auth/login");
     } catch (err: any) {
       if (err.code === "ER_DUP_ENTRY") {
-        return res.render("auth/register", { title: "Cadastro", error: "Email já cadastrado!" });
+        return res.render("auth/registro", { title: "Cadastro", error: "Email já cadastrado!" });
       }
       console.error(err);
-      res.render("auth/register", { title: "Cadastro", error: "Erro no cadastro!" });
+      res.render("auth/registro", { title: "Cadastro", error: "Erro no cadastro!" });
     }
   });
 
@@ -122,7 +123,7 @@ app.get("/web", (req, res) => {
     console.log(`📡 URL: http://localhost:${port}`);
     console.log(`🩺 Health: http://localhost:${port}/health`);
     console.log(`🔑 Login: http://localhost:${port}/auth/login`);
-    console.log(`⭐ Cadastro: http://localhost:${port}/auth/register`);
+    console.log(`⭐ Cadastro: http://localhost:${port}/auth/registro`);
     console.log(`🌐 Página Web: http://localhost:${port}/web`);
     console.log("====================================");
   });
