@@ -1,11 +1,12 @@
 // src/server.ts
 import * as dotenv from "dotenv";
-dotenv.config();
+import * as path from "path"; // Importe path primeiro
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 import express from "express";
-import path from "path";
 import bcrypt from "bcrypt";
-import { pool } from './database/database';
+import { pool } from './database/database-fixed';
 import { testConnection } from './database/testConnection';
 
 const app = express();
@@ -21,13 +22,14 @@ async function startServer() {
 
   // Configuração EJS
   app.set("view engine", "ejs");
-  app.set("views", path.join(__dirname, "views"));
+  app.set("views", path.join(__dirname, "views")); // Use o path importado acima
 
   // Middleware
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(express.static(path.join(__dirname, "public")));
 
+  // ... resto do código permanece igual
   // ================= ROTAS ==================
 
   // Página inicial redireciona para login
