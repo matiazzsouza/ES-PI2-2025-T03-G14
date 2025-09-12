@@ -43,9 +43,31 @@ export async function createUser(name: string, email: string, telefone: string, 
 }
 
 export function validateUserSession(session: any): boolean {
-  return !!session.user;
+  return !!session?.['user']; // ✅ Use bracket notation
 }
 
 export function getUserFromSession(session: any): User | null {
-  return session.user || null;
+  return session?.['user'] || null; // ✅ Use bracket notation
+}
+
+export function setUserToSession(session: any, user: User): void {
+  if (session) {
+    session['user'] = { // ✅ Use bracket notation
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      telefone: user.telefone,
+      created_at: user.created_at
+    };
+  }
+}
+export function clearUserSession(session: any): void {
+  if (session) {
+    session.user = null;
+    session.destroy((err: any) => {
+      if (err) {
+        console.error("Erro ao destruir sessão:", err);
+      }
+    });
+  }
 }

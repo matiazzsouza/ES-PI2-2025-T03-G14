@@ -2,7 +2,7 @@
 
 <main class="home-container">
     <div class="welcome-card">
-        <h1>🎉 Bem-vindo, <%= user.name %>!</h1>
+        <h1>🎉 Bem-vindo, <%= user ? user.name : 'Usuário' %>!</h1>
         <p>Você acessou o sistema NotaDez com sucesso.</p>
         
         <div class="quick-actions">
