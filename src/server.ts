@@ -8,12 +8,14 @@ import express from "express";
 import bcrypt from "bcrypt";
 import { pool } from './database/database-fixed';
 import { testConnection } from './database/testConnection';
+import { validatePassword } from './utils/passwordValidator';
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 
 // ================= INICIALIZAÇÃO =================
+
 async function startServer() {
   const ok = await testConnection();
   if (!ok) {
@@ -37,6 +39,7 @@ async function startServer() {
   app.get("/", (req, res) => {
     res.redirect("/auth/login");
   });
+
 
   // --- LOGIN ---
   app.get("/auth/login", (req, res) => {
@@ -66,35 +69,74 @@ async function startServer() {
     }
   });
 
+  
   // --- REGISTRO ---
-  app.get("/auth/registro", (req, res) => {
-    res.render("auth/registro", { title: "Cadastro", error: null });
+
+app.get("/auth/registro", (req, res) => {
+  res.render("auth/registro", { 
+    title: "Cadastro", 
+    error: null,
+    passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
   });
+});
 
-  app.post("/auth/registro", async (req, res) => {
-    try {
-      const { name, email, password } = req.body;
-      const hashedPassword = await bcrypt.hash(password, 10);
+app.post("/auth/registro", async (req, res) => {
+  try {
+    const { name, email, telefone ,password, confirmPassword } = req.body;
 
-      await pool.query(
-        "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
-        [name, email, hashedPassword]
-      );
-
-      res.redirect("/auth/login");
-    } catch (err: any) {
-      if (err.code === "ER_DUP_ENTRY") {
-        return res.render("auth/registro", { title: "Cadastro", error: "Email já cadastrado!" });
-      }
-      console.error(err);
-      res.render("auth/registro", { title: "Cadastro", error: "Erro no cadastro!" });
+    // Validar se senhas coincidem
+    if (password !== confirmPassword) {
+      return res.render("auth/registro", { 
+        title: "Cadastro", 
+        error: "Senhas não coincidem!",
+        passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
+      });
     }
-  });
+
+    // Validar força da senha
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+      return res.render("auth/registro", { 
+        title: "Cadastro", 
+        error: passwordValidation.message,
+        passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
+      });
+    }
+
+    // Se tudo ok, criar usuário
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await pool.query(
+      "INSERT INTO users (name, email, telefone, password_hash) VALUES (?, ?, ?, ?)",
+      [name, email, telefone,hashedPassword]
+    );
+
+    res.redirect("/auth/login?message=Cadastro realizado com sucesso!");
+
+  } catch (err: any) {
+    if (err.code === "ER_DUP_ENTRY") {
+      return res.render("auth/registro", { 
+        title: "Cadastro", 
+        error: "Email já cadastrado!",
+        passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
+      });
+    }
+    console.error(err);
+    res.render("auth/registro", { 
+      title: "Cadastro", 
+      error: "Erro no cadastro!",
+      passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
+    });
+  }
+});
+
+
 
 // --- PÁGINA WEB ---
 app.get("/web", (req, res) => {
   res.render("auth/login", { title: "Página Web", error: null });
 });
+
 
 
   // --- HEALTH CHECK ---
@@ -106,6 +148,8 @@ app.get("/web", (req, res) => {
       framework: "Express.js",
     });
   });
+
+
 
   // --- ROTAS NÃO ENCONTRADAS ---
   app.use((req, res) => {
