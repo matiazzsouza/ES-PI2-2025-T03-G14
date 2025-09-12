@@ -5,10 +5,12 @@ import * as path from "path"; // Importe path primeiro
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 import express from "express";
+import session from "express-session"; 
 import bcrypt from "bcrypt";
 import { pool } from './database/database-fixed';
 import { testConnection } from './database/testConnection';
 import { validatePassword } from './utils/passwordValidator';
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -35,11 +37,6 @@ async function startServer() {
   
   // ================= ROTAS ==================
 
-  // Página inicial redireciona para login
-  app.get("/", (req, res) => {
-    res.redirect("/auth/login");
-  });
-
 
   // --- LOGIN ---
   app.get("/auth/login", (req, res) => {
@@ -62,11 +59,14 @@ async function startServer() {
         return res.render("auth/login", { title: "Login", error: "Senha incorreta!" });
       }
 
-      res.send(`Bem-vindo ${user.name}!`);
+      res.redirect("/home");//!manda diretamente para a pagina inicial
+
+
     } catch (err) {
       console.error(err);
       res.render("auth/login", { title: "Login", error: "Erro no login!" });
     }
+    
   });
 
   
@@ -132,7 +132,19 @@ app.post("/auth/registro", async (req, res) => {
 
 
 
+// --- HOMEPAGE ---
+
+app.get("/home", (req, res) => {
+  res.render("home/home", { 
+    title: "Página Inicial",
+    user: { name: "Usuário" }
+  });
+});
+
+
+
 // --- PÁGINA WEB ---
+
 app.get("/web", (req, res) => {
   res.render("auth/login", { title: "Página Web", error: null });
 });
@@ -159,6 +171,7 @@ app.get("/web", (req, res) => {
       suggest: "Verifique a documentação da API",
     });
   });
+
 
   // ================= INICIA SERVIDOR =================
   app.listen(port, () => {

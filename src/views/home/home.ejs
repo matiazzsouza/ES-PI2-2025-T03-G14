@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+
+<main class="home-container">
+    <div class="welcome-card">
+        <h1>🎉 Bem-vindo, <%= user.name %>!</h1>
+        <p>Você acessou o sistema NotaDez com sucesso.</p>
+        
+        <div class="quick-actions">
+            <h2>📋 Ações Rápidas</h2>
+            <div class="action-buttons">
+                <a href="/professor/dashboard" class="btn btn-primary">Painel do Professor</a>
+                <a href="/auth/login" class="btn btn-secondary">Sair</a>
+            </div>
+        </div>
+
+        <div class="system-info">
+            <h2>📊 Resumo do Sistema</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="number">0</span>
+                    <span class="label">Alunos Cadastrados</span>
+                </div>
+                <div class="info-item">
+                    <span class="number">0</span>
+                    <span class="label">Atividades Criadas</span>
+                </div>
+                <div class="info-item">
+                    <span class="number">0</span>
+                    <span class="label">Notas Lançadas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

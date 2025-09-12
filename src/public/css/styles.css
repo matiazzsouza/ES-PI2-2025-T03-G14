@@ -5,6 +5,9 @@ body {
   padding: 0;
 }
 
+
+/* ===================== TELA DE LOGIN E REGISTRO =========================*/
+
 .login-container {
   background: #fff;
   padding: 2rem;
@@ -66,4 +69,81 @@ body {
   color: red;
   text-align: center;
   margin-bottom: 1rem;
+}
+
+
+/* ================ HOMEPAGE ======================*/
+
+.home-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.welcome-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.welcome-card h1 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.quick-actions {
+    margin: 2rem 0;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.system-info {
+    margin-top: 2rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.info-item {
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.number {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.label {
+    color: #666;
 }
