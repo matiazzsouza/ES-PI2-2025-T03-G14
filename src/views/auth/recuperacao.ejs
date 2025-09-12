@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+
+
+
+
+<main class="recovery-main">
+    <div class="recovery-container">
+        <div class="recovery-header">
+            <div class="logo">
+                <h1>🔐 NotaDez</h1>
+            </div>
+            <h2>Recuperação de Senha</h2>
+            <p>Informe seu email para recuperar sua senha</p>
+        </div>
+
+        <% if (error) { %>
+            <div class="alert alert-error">
+                <span>❌</span>
+                <%= error %>
+            </div>
+        <% } %>
+
+        <% if (message) { %>
+            <div class="alert alert-success">
+                <span>✅</span>
+                <%= message %>
+            </div>
+        <% } %>
+
+        <form class="recovery-form" action="/auth/recuperar-senha" method="POST">
+            <div class="form-group">
+                <label for="email">Email cadastrado</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    placeholder="seu.email@exemplo.com"
+                    value="<%= email || '' %>"
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                🔒 Enviar Link de Recuperação
+            </button>
+        </form>
+
+        <div class="recovery-links">
+            <a href="/auth/login">↩️ Voltar para o Login</a>
+            <a href="/auth/registro">📝 Criar nova conta</a>
+        </div>
+    </div>
+</main>
+
+

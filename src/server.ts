@@ -10,13 +10,21 @@ import bcrypt from "bcrypt";
 import { pool } from './database/database-fixed';
 import { testConnection } from './database/testConnection';
 import { validatePassword } from './utils/passwordValidator';
+import { 
+  getUserByEmail, 
+  createUser, 
+  validateUserSession, 
+  getUserFromSession
+} from './utils/passainfos';
+
+// Agora a função getUserByEmail estará disponível
 
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 
-// ================= INICIALIZAÇÃO =================
+//* ================= INICIALIZAÇÃO =================
 
 async function startServer() {
   const ok = await testConnection();
@@ -35,7 +43,7 @@ async function startServer() {
   app.use(express.static(path.join(__dirname, "public")));
 
   
-  // ================= ROTAS ==================
+  //! ================= ROTAS ==================
 
 
   // --- LOGIN ---
@@ -70,7 +78,9 @@ async function startServer() {
   });
 
   
-  // --- REGISTRO ---
+
+  //! --- REGISTRO ---
+
 
 app.get("/auth/registro", (req, res) => {
   res.render("auth/registro", { 
@@ -132,7 +142,63 @@ app.post("/auth/registro", async (req, res) => {
 
 
 
-// --- HOMEPAGE ---
+//! --- RECUPERAÇÃO SENHA ---
+
+
+app.get("/auth/recuperacao", (req, res) => {
+  res.render("auth/recuperacao", { 
+    title: "Recuperação de Senha",
+    error: null,
+    message: null,
+    email: ""
+  });
+});
+
+app.post("/auth/recuperacao", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Verifica se o email existe
+    const user = await getUserByEmail(email);
+    
+    if (!user) {
+      return res.render("auth/recuperacao", {
+        title: "Recuperação de Senha",
+        error: "Email não encontrado em nosso sistema",
+        message: null,
+        email: email
+      });
+    }
+
+    // Aqui você implementaria:
+    // 1. Gerar token de recuperação
+    // 2. Salvar token no banco com expiração
+    // 3. Enviar email com link de recuperação
+
+    res.render("auth/recuperacao", {
+      title: "Recuperação de Senha",
+      error: null,
+      message: "Email de recuperação enviado com sucesso! Verifique sua caixa de entrada.",
+      email: ""
+    });
+
+  } catch (error) {
+    console.error("Erro na recuperação de senha:", error);
+    res.render("auth/recuperacao", {
+      title: "Recuperação de Senha",
+      error: "Erro ao processar solicitação. Tente novamente.",
+      message: null,
+      email: req.body.email
+    });
+  }
+});
+
+
+
+
+
+
+//! --- HOMEPAGE ---
 
 app.get("/home", (req, res) => {
   res.render("home/home", { 
@@ -143,7 +209,7 @@ app.get("/home", (req, res) => {
 
 
 
-// --- PÁGINA WEB ---
+//! --- PÁGINA WEB ---
 
 app.get("/web", (req, res) => {
   res.render("auth/login", { title: "Página Web", error: null });
@@ -151,7 +217,7 @@ app.get("/web", (req, res) => {
 
 
 
-  // --- HEALTH CHECK ---
+  //! --- HEALTH CHECK ---
   app.get("/health", (req, res) => {
     res.json({
       status: "OK",
@@ -163,7 +229,7 @@ app.get("/web", (req, res) => {
 
 
 
-  // --- ROTAS NÃO ENCONTRADAS ---
+  //! --- ROTAS NÃO ENCONTRADAS ---
   app.use((req, res) => {
     res.status(404).json({
       error: "Rota não encontrada",
@@ -173,7 +239,7 @@ app.get("/web", (req, res) => {
   });
 
 
-  // ================= INICIA SERVIDOR =================
+  //* ================= INICIA SERVIDOR =================
   app.listen(port, () => {
     console.log("====================================");
     console.log("🚀 SERVIDOR NOTADEZ INICIADO!");
