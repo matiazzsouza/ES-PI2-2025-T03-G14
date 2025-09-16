@@ -1,5 +1,8 @@
 import { pool } from '../database/database-fixed';
 
+
+//! cria uma tipagem para o usuario
+
 export interface User {
   id: number;
   name: string;
@@ -9,6 +12,7 @@ export interface User {
   created_at: Date;
 }
 
+//! pega o e-mail que foi digitado 
 export async function getUserByEmail(email: string): Promise<User | null> {
   try {
     const [rows]: any = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
@@ -19,15 +23,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   }
 }
 
-export async function getUserById(id: number): Promise<User | null> {
-  try {
-    const [rows]: any = await pool.query("SELECT * FROM users WHERE id = ?", [id]);
-    return rows[0] || null;
-  } catch (error) {
-    console.error("Erro ao buscar usuário por ID:", error);
-    return null;
-  }
-}
+//! Cria um usuario no banco de dados
 
 export async function createUser(name: string, email: string, telefone: string, passwordHash: string): Promise<boolean> {
   try {
@@ -61,6 +57,8 @@ export function setUserToSession(session: any, user: User): void {
     };
   }
 }
+
+//! Apaga o usuario temporario da sessao
 export function clearUserSession(session: any): void {
   if (session) {
     session.user = null;
@@ -71,3 +69,5 @@ export function clearUserSession(session: any): void {
     });
   }
 }
+
+

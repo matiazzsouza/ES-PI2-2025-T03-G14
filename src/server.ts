@@ -10,8 +10,7 @@ import bcrypt from "bcrypt";
 import { pool } from './database/database-fixed';
 import { testConnection } from './database/testConnection';
 import { validatePassword } from './utils/passwordValidator';
-import { getUserByEmail } from './utils/passainfos';
-
+import {getUserByEmail, createUser, setUserToSession, clearUserSession, validateUserSession, getUserFromSession} from './utils/passainfos';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -52,184 +51,181 @@ async function startServer() {
     next();
   });
 
-  //! ================= ROTAS =================
 
-  //  --- LOGIN ---
+  //?================= ROTAS =================
 
-  app.get("/auth/login", (req, res) => {
-    res.render("auth/login", { title: "Login", error: null });
-  });
+//! --- LOGIN ---
+app.get("/auth/login", (req, res) => {
+  res.render("auth/login", { title: "Login", error: null });
+});
 
-  app.post("/auth/login", async (req, res) => {
-    try {
-      const { email, password } = req.body;
+app.post("/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-      const [rows]: any = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
-      const user = rows[0];
+    const user = await getUserByEmail(email); 
 
-      if (!user) {
-        return res.render("auth/login", { title: "Login", error: "Usuário não encontrado!" });
-      }
-
-      const validPassword = await bcrypt.compare(password, user.password_hash);
-      if (!validPassword) {
-        return res.render("auth/login", { title: "Login", error: "Senha incorreta!" });
-      }
-
-      (req.session as any).user = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        telefone: user.telefone,
-        created_at: user.created_at
-      };
-
-      (req.session as any).save((err: any) => {
-        if (err) {
-          console.error('Erro ao salvar sessão:', err);
-          return res.render("auth/login", { title: "Login", error: "Erro no login!" });
-        }
-        res.redirect("/home");
-      });
-
-    } catch (err) {
-      console.error(err);
-      res.render("auth/login", { title: "Login", error: "Erro no login!" });
+    if (!user) {
+      return res.render("auth/login", { title: "Login", error: "Usuário não encontrado!" });
     }
-  });
 
+    const validPassword = await bcrypt.compare(password, user.password_hash);
+    if (!validPassword) {
+      return res.render("auth/login", { title: "Login", error: "Senha incorreta!" });
+    }
 
-  //! --- logout --- 
+    setUserToSession(req.session, user); 
 
-  app.get("/auth/logout", (req, res) => {
-    (req.session as any).destroy((err: any) => {
+    (req.session as any).save((err: any) => {
       if (err) {
-        console.error("Erro ao fazer logout:", err);
+        console.error('Erro ao salvar sessão:', err);
+        return res.render("auth/login", { title: "Login", error: "Erro no login!" });
       }
-      res.redirect("/auth/login");
+      res.redirect("/home");
     });
+
+  } catch (err) {
+    console.error(err);
+    res.render("auth/login", { title: "Login", error: "Erro no login!" });
+  }
+});
+
+
+//! --- LOGOUT --- 
+app.get("/auth/logout", (req, res) => {
+  clearUserSession(req.session); // 
+  res.redirect("/auth/login");
+});
+
+
+//! --- REGISTRO ---
+app.get("/auth/registro", (req, res) => {
+  res.render("auth/registro", { 
+    title: "Cadastro", 
+    error: null,
+    passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
   });
+});
 
-  
+app.post("/auth/registro", async (req, res) => {
+  try {
+    const { name, email, telefone, password, confirmPassword } = req.body;
 
-  // REGISTRO
-  app.get("/auth/registro", (req, res) => {
-    res.render("auth/registro", { 
-      title: "Cadastro", 
-      error: null,
-      passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
-    });
-  });
-
-  app.post("/auth/registro", async (req, res) => {
-    try {
-      const { name, email, telefone, password, confirmPassword } = req.body;
-
-      if (password !== confirmPassword) {
-        return res.render("auth/registro", { 
-          title: "Cadastro", 
-          error: "Senhas não coincidem!",
-          passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
-        });
-      }
-
-      const passwordValidation = validatePassword(password);
-      if (!passwordValidation.valid) {
-        return res.render("auth/registro", { 
-          title: "Cadastro", 
-          error: passwordValidation.message,
-          passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
-        });
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      await pool.query(
-        "INSERT INTO users (name, email, telefone, password_hash) VALUES (?, ?, ?, ?)",
-        [name, email, telefone, hashedPassword]
-      );
-
-      res.redirect("/auth/login?message=Cadastro realizado com sucesso!");
-
-    } catch (err: any) {
-      if (err.code === "ER_DUP_ENTRY") {
-        return res.render("auth/registro", { 
-          title: "Cadastro", 
-          error: "Email já cadastrado!",
-          passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
-        });
-      }
-      console.error(err);
-      res.render("auth/registro", { 
+    if (password !== confirmPassword) {
+      return res.render("auth/registro", { 
         title: "Cadastro", 
-        error: "Erro no cadastro!",
+        error: "Senhas não coincidem!",
         passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
       });
     }
-  });
 
-  // RECUPERAÇÃO SENHA
-  app.get("/auth/recuperacao", (req, res) => {
-    res.render("auth/recuperacao", { 
-      title: "Recuperação de Senha",
-      error: null,
-      message: null,
-      email: ""
-    });
-  });
-
-  app.post("/auth/recuperacao", async (req, res) => {
-    try {
-      const { email } = req.body;
-
-      const user = await getUserByEmail(email);
-      
-      if (!user) {
-        return res.render("auth/recuperacao", {
-          title: "Recuperação de Senha",
-          error: "Email não encontrado em nosso sistema",
-          message: null,
-          email: email
-        });
-      }
-
-      res.render("auth/recuperacao", {
-        title: "Recuperação de Senha",
-        error: null,
-        message: "Email de recuperação enviado com sucesso! Verifique sua caixa de entrada.",
-        email: ""
-      });
-
-    } catch (error) {
-      console.error("Erro na recuperação de senha:", error);
-      res.render("auth/recuperacao", {
-        title: "Recuperação de Senha",
-        error: "Erro ao processar solicitação. Tente novamente.",
-        message: null,
-        email: req.body.email
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+      return res.render("auth/registro", { 
+        title: "Cadastro", 
+        error: passwordValidation.message,
+        passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
       });
     }
-  });
 
-  // HOMEPAGE
-  app.get("/home", (req, res) => {
-    const user = (req.session as any).user;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const created = await createUser(name, email, telefone, hashedPassword); 
+    if (!created) {
+      return res.render("auth/registro", { 
+        title: "Cadastro", 
+        error: "Erro ao cadastrar usuário!",
+        passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
+      });
+    }
+
+    res.redirect("/auth/login?message=Cadastro realizado com sucesso!");
+
+  } catch (err: any) {
+    if (err.code === "ER_DUP_ENTRY") {
+      return res.render("auth/registro", { 
+        title: "Cadastro", 
+        error: "Email já cadastrado!",
+        passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
+      });
+    }
+    console.error(err);
+    res.render("auth/registro", { 
+      title: "Cadastro", 
+      error: "Erro no cadastro!",
+      passwordRequirements: "Senha deve ter: 8+ caracteres, maiúscula, minúscula, número e caractere especial"
+    });
+  }
+});
+
+
+//! --- RECUPERAÇÃO SENHA ---
+app.get("/auth/recuperacao", (req, res) => {
+  res.render("auth/recuperacao", { 
+    title: "Recuperação de Senha",
+    error: null,
+    message: null,
+    email: ""
+  });
+});
+
+app.post("/auth/recuperacao", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await getUserByEmail(email); 
     
     if (!user) {
-      return res.redirect("/auth/login");
+      return res.render("auth/recuperacao", {
+        title: "Recuperação de Senha",
+        error: "Email não encontrado em nosso sistema",
+        message: null,
+        email: email
+      });
     }
 
-    res.render("home/home", { 
-      title: "Página Inicial",
-      user: user
+    res.render("auth/recuperacao", {
+      title: "Recuperação de Senha",
+      error: null,
+      message: "Email de recuperação enviado com sucesso! Verifique sua caixa de entrada.",
+      email: ""
     });
-  });
 
-  // PÁGINA WEB
+  } catch (error) {
+    console.error("Erro na recuperação de senha:", error);
+    res.render("auth/recuperacao", {
+      title: "Recuperação de Senha",
+      error: "Erro ao processar solicitação. Tente novamente.",
+      message: null,
+      email: req.body.email
+    });
+  }
+});
+
+
+//! --- HOMEPAGE ---
+app.get("/home", (req, res) => {
+  if (!validateUserSession(req.session)) { 
+    return res.redirect("/auth/login");
+  }
+
+  const user = getUserFromSession(req.session)
+
+  res.render("home/home", { 
+    title: "Página Inicial",
+    user: user
+  });
+});
+
+
+  //! --- PÁGINA WEB ---
   app.get("/web", (req, res) => {
     res.render("auth/login", { title: "Página Web", error: null });
   });
 
+
+
+  
   // HEALTH CHECK
   app.get("/health", (req, res) => {
     res.json({
@@ -238,6 +234,7 @@ async function startServer() {
       database: "MySQL"
     });
   });
+  
 
   // ROTAS NÃO ENCONTRADAS
   app.use((req, res) => {
@@ -248,16 +245,16 @@ async function startServer() {
     });
   });
 
-  // INICIA SERVIDOR
+  //?  ===== INICIA SERVIDOR ===============
   app.listen(port, () => {
     console.log("====================================");
     console.log("🚀 SERVIDOR NOTADEZ INICIADO!");
-    console.log(`📡 URL: http://localhost:${port}/web`);
+    console.log(`📡 WEB: http://localhost:${port}/web`);
     console.log("====================================");
   });
 }
 
-// Executa
+
 startServer().catch(error => {
   console.error("❌ Erro ao iniciar servidor:", error);
   process.exit(1);
