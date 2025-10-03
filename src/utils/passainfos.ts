@@ -10,12 +10,16 @@ export interface User {
   telefone: string;
   password_hash: string;
   created_at: Date;
+  primeira_vez: boolean;
 }
 
 //! pega o e-mail que foi digitado 
 export async function getUserByEmail(email: string): Promise<User | null> {
   try {
-    const [rows]: any = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+    const [rows]: any = await pool.query(
+      "SELECT id, name, email, telefone, password_hash, created_at, primeira_vez FROM users WHERE email = ?", 
+      [email]
+    );
     return rows[0] || null;
   } catch (error) {
     console.error("Erro ao buscar usuário:", error);
@@ -28,8 +32,8 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 export async function createUser(name: string, email: string, telefone: string, passwordHash: string): Promise<boolean> {
   try {
     await pool.query(
-      "INSERT INTO users (name, email, telefone, password_hash) VALUES (?, ?, ?, ?)",
-      [name, email, telefone, passwordHash]
+      "INSERT INTO users (name, email, telefone, password_hash, primeira_vez) VALUES (?, ?, ?, ?, ?)",
+      [name, email, telefone, passwordHash, true] // ✅ Novo usuário = primeira_vez TRUE
     );
     return true;
   } catch (error: any) {
@@ -53,7 +57,8 @@ export function setUserToSession(session: any, user: User): void {
       name: user.name,
       email: user.email,
       telefone: user.telefone,
-      created_at: user.created_at
+      created_at: user.created_at,
+      primeira_vez: user.primeira_vez
     };
   }
 }
@@ -69,5 +74,3 @@ export function clearUserSession(session: any): void {
     });
   }
 }
-
-

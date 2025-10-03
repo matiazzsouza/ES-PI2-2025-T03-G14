@@ -1,0 +1,49 @@
+
+<%- include('../partials/header') %>
+
+<main class="primeiro-login-container">
+  <h2>Primeiro Acesso - NotaDez</h2>
+
+  <% if (error) { %>
+    <div class="primeiro-login-error"><%= error %></div>
+  <% } %>
+
+  <form action="/primeiro-login" method="POST" id="primeiroLoginForm">
+
+    <!-- Instituições -->
+    <div class="primeiro-login-section">
+      <label>Instituições onde trabalha:</label>
+      <div id="primeiroLoginInstitutionsList">
+        <div class="primeiro-login-input-group">
+          <input type="text" name="institutions[]" placeholder="Ex: PUC-Campinas" required>
+          <button type="button" class="primeiro-login-remove-btn">✖</button>
+        </div>
+      </div>
+      <button type="button" class="primeiro-login-add-btn" id="addInstitution">+ Adicionar instituição</button>
+    </div>
+
+    <!-- Cursos -->
+    <div class="primeiro-login-section">
+      <label>Cursos que leciona:</label>
+      <div id="primeiroLoginCoursesList">
+        <div class="primeiro-login-input-group">
+          <input type="text" name="courses[]" placeholder="Ex: Engenharia de Software" required>
+          <button type="button" class="primeiro-login-remove-btn">✖</button>
+        </div>
+      </div>
+      <button type="button" class="primeiro-login-add-btn" id="addCourse">+ Adicionar curso</button>
+    </div>
+
+    <button type="submit" class="primeiro-login-submit-btn">Continuar para o Sistema</button>
+  </form>
+
+  <div class="primeiro-login-info">
+    <p>Preencha pelo menos uma instituição e um curso para continuar</p>
+  </div>
+
+</main>
+
+<script src="/js/primeiro-login.js" defer></script>
+
+
+<%- include('../partials/footer') %>
