@@ -18,9 +18,17 @@
         <div class="instituicoes-section">
             <h2>🏫 Minhas Instituições</h2>
             
-            <% if (instituicoes && instituicoes.length > 0) { %>
+            <% 
+            // Definir variáveis seguras para evitar erros
+            const instituicoesList = typeof instituicoes !== 'undefined' ? instituicoes : [];
+            const totalCursosSafe = typeof totalCursos !== 'undefined' ? totalCursos : 0;
+            const totalMateriasSafe = typeof totalMaterias !== 'undefined' ? totalMaterias : 0;
+            const totalNotasSafe = typeof totalNotas !== 'undefined' ? totalNotas : 0;
+            %>
+            
+            <% if (instituicoesList.length > 0) { %>
                 <div class="instituicoes-grid">
-                    <% instituicoes.forEach(instituicao => { %>
+                    <% instituicoesList.forEach(instituicao => { %>
                         <div class="instituicao-card">
                             <div class="instituicao-header">
                                 <h3><%= instituicao.nome %></h3>
@@ -32,11 +40,15 @@
                             
                             <div class="cursos-list">
                                 <h4>📚 Cursos:</h4>
-                                <% if (instituicao.cursos && instituicao.cursos.length > 0) { %>
+                                <% 
+                                // Verificar se a instituição tem cursos
+                                const cursosDaInstituicao = instituicao.cursos && Array.isArray(instituicao.cursos) ? instituicao.cursos : [];
+                                %>
+                                <% if (cursosDaInstituicao.length > 0) { %>
                                     <ul>
-                                        <% instituicao.cursos.forEach(curso => { %>
+                                        <% cursosDaInstituicao.forEach(curso => { %>
                                             <li class="curso-item">
-                                                <span><%= curso.nome %></span>
+                                                <span><%= curso.nome || 'Curso sem nome' %></span>
                                                 <div class="curso-actions">
                                                     <button class="btn-tiny btn-add-disciplina" 
                                                             data-curso-id="<%= curso.id %>"
@@ -75,20 +87,20 @@
             <h2>📊 Resumo do Sistema</h2>
             <div class="info-grid">
                 <div class="info-item">
-                    <span class="number"><%= instituicoes ? instituicoes.length : 0 %></span>
+                    <span class="number"><%= instituicoesList.length %></span>
                     <span class="label">Instituições</span>
                 </div>
                 <div class="info-item">
-                    <span class="number"><%= totalCursos || 0 %></span>
+                    <span class="number"><%= totalCursosSafe %></span>
                     <span class="label">Cursos</span>
                 </div>
                 <div class="info-item">
-                    <span class="number"><%= totalDisciplinas || 0 %></span>
-                    <span class="label">Disciplinas</span>
+                    <span class="number"><%= totalMateriasSafe %></span>
+                    <span class="label">Matérias</span>
                 </div>
                 <div class="info-item">
-                    <span class="number"><%= totalTurmas || 0 %></span>
-                    <span class="label">Turmas</span>
+                    <span class="number"><%= totalNotasSafe %></span>
+                    <span class="label">Notas</span>
                 </div>
             </div>
         </div>

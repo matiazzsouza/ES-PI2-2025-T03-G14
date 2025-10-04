@@ -1,8 +1,5 @@
 import { pool } from '../database/database-fixed';
 
-
-//! cria uma tipagem para o usuario
-
 export interface User {
   id: number;
   name: string;
@@ -13,7 +10,6 @@ export interface User {
   primeira_vez: boolean;
 }
 
-//! pega o e-mail que foi digitado 
 export async function getUserByEmail(email: string): Promise<User | null> {
   try {
     const [rows]: any = await pool.query(
@@ -27,13 +23,11 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   }
 }
 
-//! Cria um usuario no banco de dados
-
 export async function createUser(name: string, email: string, telefone: string, passwordHash: string): Promise<boolean> {
   try {
     await pool.query(
       "INSERT INTO users (name, email, telefone, password_hash, primeira_vez) VALUES (?, ?, ?, ?, ?)",
-      [name, email, telefone, passwordHash, true] // ✅ Novo usuário = primeira_vez TRUE
+      [name, email, telefone, passwordHash, true]
     );
     return true;
   } catch (error: any) {
@@ -42,17 +36,18 @@ export async function createUser(name: string, email: string, telefone: string, 
   }
 }
 
+// 🔥 CORREÇÃO: Use notação consistente
 export function validateUserSession(session: any): boolean {
-  return !!session?.['user']; // ✅ Use bracket notation
+  return !!(session && session.user && session.user.id); // ← Mais específico
 }
 
 export function getUserFromSession(session: any): User | null {
-  return session?.['user'] || null; // ✅ Use bracket notation
+  return session?.user || null; // ← Use .user consistentemente
 }
 
 export function setUserToSession(session: any, user: User): void {
   if (session) {
-    session['user'] = { // ✅ Use bracket notation
+    session.user = { // ← Use .user consistentemente
       id: user.id,
       name: user.name,
       email: user.email,
@@ -63,7 +58,6 @@ export function setUserToSession(session: any, user: User): void {
   }
 }
 
-//! Apaga o usuario temporario da sessao
 export function clearUserSession(session: any): void {
   if (session) {
     session.user = null;

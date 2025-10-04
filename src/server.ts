@@ -302,20 +302,98 @@ async function startServer() {
     }
   });
 
-  //! --- HOMEPAGE ---
 
-  app.get("/home", (req, res) => {
-    if (!validateUserSession(req.session)) { 
-      return res.redirect("/auth/login");
-    }
+  
 
-    const user = getUserFromSession(req.session)
+//! --- HOMEPAGE ---
+
+app.get("/home", async (req, res) => {
+  if (!validateUserSession(req.session)) { 
+    return res.redirect("/auth/login");
+  }
+
+  const user = getUserFromSession(req.session);
+  
+  if (!user || !user.id) {
+    clearUserSession(req.session);
+    return res.redirect("/auth/login");
+  }
+
+  try {
+    // 🔥 BUSCAR INSTITUIÇÕES COM SEUS CURSOS
+    const [instituicoesComCursos]: any = await pool.query(
+      `SELECT 
+        i.id as instituicao_id,
+        i.nome as instituicao_nome,
+        i.created_at as instituicao_created_at,
+        c.id as curso_id,
+        c.nome as curso_nome,
+        c.created_at as curso_created_at
+       FROM instituicoes i
+       LEFT JOIN cursos c ON i.id = c.instituicao_id
+       WHERE i.user_id = ?
+       ORDER BY i.nome, c.nome`,
+      [user.id]
+    );
+
+    // 🔥 PROCESSAR OS DADOS: Agrupar cursos por instituição
+    const instituicoesMap = new Map();
+    
+    instituicoesComCursos.forEach((row: any) => {
+      const instituicaoId = row.instituicao_id;
+      
+      if (!instituicoesMap.has(instituicaoId)) {
+        instituicoesMap.set(instituicaoId, {
+          id: instituicaoId,
+          nome: row.instituicao_nome,
+          created_at: row.instituicao_created_at,
+          cursos: []
+        });
+      }
+      
+      // Se existe um curso associado, adiciona à instituição
+      if (row.curso_id) {
+        instituicoesMap.get(instituicaoId).cursos.push({
+          id: row.curso_id,
+          nome: row.curso_nome,
+          created_at: row.curso_created_at
+        });
+      }
+    });
+
+    const instituicoes = Array.from(instituicoesMap.values());
+
+    // 🔥 CALCULAR TOTAL DE CURSOS
+    const totalCursos = instituicoes.reduce((total, instituicao) => {
+      return total + (instituicao.cursos ? instituicao.cursos.length : 0);
+    }, 0);
+
+    console.log("🔍 Instituições processadas:", instituicoes);
+    console.log("🔍 Total de cursos:", totalCursos);
 
     res.render("home/home", { 
       title: "Página Inicial",
-      user: user
+      user: user,
+      instituicoes: instituicoes,
+      totalCursos: totalCursos,
+      totalMaterias: 0,
+      totalNotas: 0
     });
-  });
+
+  } catch (error) {
+    console.error("Erro ao buscar dados para home:", error);
+    res.render("home/home", { 
+      title: "Página Inicial",
+      user: user,
+      instituicoes: [],
+      totalCursos: 0,
+      totalMaterias: 0,
+      totalNotas: 0
+    });
+  }
+});
+
+
 
   //! --- PÁGINA WEB ---
   app.get("/web", (req, res) => {
