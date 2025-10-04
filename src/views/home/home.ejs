@@ -3,30 +3,92 @@
 <main class="home-container">
     <div class="welcome-card">
         <h1>🎉 Bem-vindo, <%= user ? user.name : 'Usuário' %>!</h1>
-        <p>Você acessou o sistema NotaDez com sucesso.</p>
+        <p>Gerencie suas instituições e cursos abaixo.</p>
         
         <div class="quick-actions">
-            <h2>📋 Ações Rápidas</h2>
+            <h2>📋 Ações Rápidas:</h2>
+            <br><br><br>
             <div class="action-buttons">
-                <a href="/professor/dashboard" class="btn btn-primary">Painel do Professor</a>
-                <a href="/auth/login" class="btn btn-secondary">Sair</a>
+                <a href="/instituicoes/nova" class="btn btn-primary">➕ Nova Instituição</a>
+                <a href="/auth/logout" class="btn btn-secondary">🚪 Sair</a>
             </div>
         </div>
 
+        <!-- Cards das Instituições -->
+        <div class="instituicoes-section">
+            <h2>🏫 Minhas Instituições</h2>
+            
+            <% if (instituicoes && instituicoes.length > 0) { %>
+                <div class="instituicoes-grid">
+                    <% instituicoes.forEach(instituicao => { %>
+                        <div class="instituicao-card">
+                            <div class="instituicao-header">
+                                <h3><%= instituicao.nome %></h3>
+                                <div class="instituicao-actions">
+                                    <button class="btn-small btn-edit" title="Editar">✏️</button>
+                                    <button class="btn-small btn-delete" title="Excluir">🗑️</button>
+                                </div>
+                            </div>
+                            
+                            <div class="cursos-list">
+                                <h4>📚 Cursos:</h4>
+                                <% if (instituicao.cursos && instituicao.cursos.length > 0) { %>
+                                    <ul>
+                                        <% instituicao.cursos.forEach(curso => { %>
+                                            <li class="curso-item">
+                                                <span><%= curso.nome %></span>
+                                                <div class="curso-actions">
+                                                    <button class="btn-tiny btn-add-disciplina" 
+                                                            data-curso-id="<%= curso.id %>"
+                                                            title="Adicionar Disciplina">➕</button>
+                                                    <button class="btn-tiny btn-ver-disciplinas"
+                                                            data-curso-id="<%= curso.id %>"
+                                                            title="Ver Disciplinas">📖</button>
+                                                </div>
+                                            </li>
+                                        <% }); %>
+                                    </ul>
+                                <% } else { %>
+                                    <p class="no-cursos">Nenhum curso cadastrado</p>
+                                <% } %>
+                            </div>
+                            
+                            <div class="instituicao-footer">
+                                <button class="btn-small btn-add-curso" 
+                                        data-instituicao-id="<%= instituicao.id %>">
+                                    ➕ Adicionar Curso
+                                </button>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <p>📝 Você ainda não possui instituições cadastradas.</p>
+                    <a href="/instituicoes/nova" class="btn btn-primary">➕ Cadastrar Primeira Instituição</a>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Resumo do Sistema -->
         <div class="system-info">
             <h2>📊 Resumo do Sistema</h2>
             <div class="info-grid">
                 <div class="info-item">
-                    <span class="number">0</span>
-                    <span class="label">Instituições Criadas</span>
+                    <span class="number"><%= instituicoes ? instituicoes.length : 0 %></span>
+                    <span class="label">Instituições</span>
                 </div>
                 <div class="info-item">
-                    <span class="number">0</span>
-                    <span class="label">Turmas Criadas</span>
+                    <span class="number"><%= totalCursos || 0 %></span>
+                    <span class="label">Cursos</span>
                 </div>
                 <div class="info-item">
-                    <span class="number">0</span>
-                    <span class="label">Diciplinas Criadas</span>
+                    <span class="number"><%= totalDisciplinas || 0 %></span>
+                    <span class="label">Disciplinas</span>
+                </div>
+                <div class="info-item">
+                    <span class="number"><%= totalTurmas || 0 %></span>
+                    <span class="label">Turmas</span>
                 </div>
             </div>
         </div>
