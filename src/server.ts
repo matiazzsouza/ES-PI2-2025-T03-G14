@@ -106,80 +106,89 @@ async function startServer() {
   });
 
   app.post("/primeiro-login", async (req, res) => {
-    const user = getUserFromSession(req.session);
-    if (!user) return res.redirect("/auth/login");
+  const user = getUserFromSession(req.session);
+  if (!user) return res.redirect("/auth/login");
 
-    try {
-      const { institutions, courses } = req.body;
+  try {
+    const { instituicoes } = req.body;
 
-      // Validação
-      if (!institutions || !courses || 
-          !Array.isArray(institutions) || !Array.isArray(courses) ||
-          institutions.length === 0 || courses.length === 0) {
-        
+    // Validação
+    if (!instituicoes || !Array.isArray(instituicoes) || instituicoes.length === 0) {
+      return res.render("home/primeiro-login", {
+        title: "Primeiro Acesso",
+        user: user,
+        error: "É necessário informar pelo menos uma instituição."
+      });
+    }
+
+    // Validar que cada instituição tem pelo menos um curso
+    for (const instituicao of instituicoes) {
+      if (!instituicao.nome?.trim() || !instituicao.cursos || !Array.isArray(instituicao.cursos) || instituicao.cursos.length === 0) {
         return res.render("home/primeiro-login", {
           title: "Primeiro Acesso",
           user: user,
-          error: "É necessário informar pelo menos uma instituição e um curso."
+          error: "Cada instituição deve ter pelo menos um curso."
         });
       }
+    }
 
-      const connection = await pool.getConnection();
-      await connection.beginTransaction();
+    const connection = await pool.getConnection();
+    await connection.beginTransaction();
 
-      try {
-        // Inserir instituições
-        for (const instituicao of institutions) {
-          if (instituicao.trim()) {
-            const [instResult]: any = await connection.query(
-              "INSERT INTO instituicoes (nome, user_id) VALUES (?, ?)",
-              [instituicao.trim(), user.id]
-            );
+    try {
+      // Inserir instituições e seus cursos
+      for (const instituicao of instituicoes) {
+        if (instituicao.nome.trim()) {
+          // Inserir instituição
+          const [instResult]: any = await connection.query(
+            "INSERT INTO instituicoes (nome, user_id) VALUES (?, ?)",
+            [instituicao.nome.trim(), user.id]
+          );
 
-            // Inserir cursos
-            for (const curso of courses) {
-              if (curso.trim()) {
-                await connection.query(
-                  "INSERT INTO cursos (nome, instituicao_id, user_id) VALUES (?, ?, ?)",
-                  [curso.trim(), instResult.insertId, user.id]
-                );
-              }
+          // Inserir cursos desta instituição
+          for (const curso of instituicao.cursos) {
+            if (curso.trim()) {
+              await connection.query(
+                "INSERT INTO cursos (nome, instituicao_id, user_id) VALUES (?, ?, ?)",
+                [curso.trim(), instResult.insertId, user.id]
+              );
             }
           }
         }
-
-        // Atualizar flag de primeira vez
-        await connection.query(
-          "UPDATE users SET primeira_vez = FALSE WHERE id = ?",
-          [user.id]
-        );
-
-        await connection.commit();
-
-        // Atualizar sessão
-        const updatedUser = await getUserByEmail(user.email);
-        if (updatedUser) {
-          setUserToSession(req.session, updatedUser);
-        }
-
-        res.redirect("/home");
-
-      } catch (error) {
-        await connection.rollback();
-        throw error;
-      } finally {
-        connection.release();
       }
 
+      // Atualizar flag de primeira vez
+      await connection.query(
+        "UPDATE users SET primeira_vez = FALSE WHERE id = ?",
+        [user.id]
+      );
+
+      await connection.commit();
+
+      // Atualizar sessão
+      const updatedUser = await getUserByEmail(user.email);
+      if (updatedUser) {
+        setUserToSession(req.session, updatedUser);
+      }
+
+      res.redirect("/home");
+
     } catch (error) {
-      console.error("Erro no primeiro login:", error);
-      res.render("home/primeiro-login", { 
-        title: "Primeiro Acesso",
-        user: user,
-        error: "Erro ao salvar configurações. Tente novamente."
-      });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
     }
-  });
+
+  } catch (error) {
+    console.error("Erro no primeiro login:", error);
+    res.render("home/primeiro-login", { 
+      title: "Primeiro Acesso",
+      user: user,
+      error: "Erro ao salvar configurações. Tente novamente."
+    });
+  }
+});
 
   //! --- LOGOUT --- 
 

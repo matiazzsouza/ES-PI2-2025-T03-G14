@@ -381,10 +381,9 @@ hr {
 /*! =============================================== PRIMEIRO LOGIN ===========================================================*/
 
 
-
 /* primeiro-login.css */
 .primeiro-login-container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 2rem auto;
   padding: 2rem;
   background: white;
@@ -408,8 +407,16 @@ hr {
   border: 1px solid #fcc;
 }
 
-.primeiro-login-section {
+.instituicao-group {
   margin-bottom: 2rem;
+  padding: 1.5rem;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+.primeiro-login-section {
+  margin-bottom: 1.5rem;
 }
 
 .primeiro-login-section label {
@@ -417,6 +424,24 @@ hr {
   margin-bottom: 0.5rem;
   font-weight: bold;
   color: #333;
+}
+
+.primeiro-login-section input[type="text"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.primeiro-login-section input[type="text"]:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.cursos-list {
+  margin-bottom: 0.5rem;
 }
 
 .primeiro-login-input-group {
@@ -432,12 +457,6 @@ hr {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  transition: border-color 0.3s;
-}
-
-.primeiro-login-input-group input:focus {
-  outline: none;
-  border-color: #667eea;
 }
 
 .primeiro-login-remove-btn {
@@ -451,7 +470,6 @@ hr {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s;
 }
 
 .primeiro-login-remove-btn:hover {
@@ -466,7 +484,7 @@ hr {
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: background-color 0.3s;
+  margin-bottom: 1rem;
 }
 
 .primeiro-login-add-btn:hover {
@@ -482,11 +500,17 @@ hr {
   border-radius: 4px;
   font-size: 1.1rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  margin-top: 1rem;
 }
 
 .primeiro-login-submit-btn:hover {
   background: #5a67d8;
+}
+
+.primeiro-login-divider {
+  border: none;
+  border-top: 1px solid #e1e5e9;
+  margin: 1.5rem 0;
 }
 
 .primeiro-login-info {
@@ -496,21 +520,16 @@ hr {
   font-size: 0.9rem;
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
-  .primeiro-login-container {
-    margin: 1rem;
-    padding: 1.5rem;
-  }
-  
-  .primeiro-login-input-group {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .primeiro-login-remove-btn {
-    align-self: flex-end;
-    width: 100%;
-    max-width: 60px;
-  }
+.remove-instituicao {
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.remove-instituicao:hover {
+  background: #ff5252;
 }

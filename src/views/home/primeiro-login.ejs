@@ -1,4 +1,3 @@
-
 <%- include('../partials/header') %>
 
 <main class="primeiro-login-container">
@@ -9,41 +8,39 @@
   <% } %>
 
   <form action="/primeiro-login" method="POST" id="primeiroLoginForm">
-
-    <!-- Instituições -->
-    <div class="primeiro-login-section">
-      <label>Instituições onde trabalha:</label>
-      <div id="primeiroLoginInstitutionsList">
-        <div class="primeiro-login-input-group">
-          <input type="text" name="institutions[]" placeholder="Ex: PUC-Campinas" required>
-          <button type="button" class="primeiro-login-remove-btn">✖</button>
+    <div id="instituicoesContainer">
+      <!-- Grupo Instituição + Cursos -->
+      <div class="instituicao-group" data-index="0">
+        <div class="primeiro-login-section">
+          <label>Instituição onde trabalha:</label>
+          <input type="text" name="instituicoes[0][nome]" placeholder="Ex: PUC-Campinas" required>
         </div>
+
+        <div class="primeiro-login-section">
+          <label>Cursos que leciona nesta instituição:</label>
+          <div class="cursos-list" data-instituicao="0">
+            <div class="primeiro-login-input-group">
+              <input type="text" name="instituicoes[0][cursos][]" placeholder="Ex: Engenharia de Software" required>
+              <button type="button" class="primeiro-login-remove-btn remove-curso">✖</button>
+            </div>
+          </div>
+          <button type="button" class="primeiro-login-add-btn add-curso" data-instituicao="0">+ Adicionar curso</button>
+        </div>
+        <hr class="primeiro-login-divider">
       </div>
-      <button type="button" class="primeiro-login-add-btn" id="addInstitution">+ Adicionar instituição</button>
     </div>
 
-    <!-- Cursos -->
-    <div class="primeiro-login-section">
-      <label>Cursos que leciona:</label>
-      <div id="primeiroLoginCoursesList">
-        <div class="primeiro-login-input-group">
-          <input type="text" name="courses[]" placeholder="Ex: Engenharia de Software" required>
-          <button type="button" class="primeiro-login-remove-btn">✖</button>
-        </div>
-      </div>
-      <button type="button" class="primeiro-login-add-btn" id="addCourse">+ Adicionar curso</button>
-    </div>
+    <button type="button" class="primeiro-login-add-btn" id="addInstituicao">+ Adicionar outra instituição</button>
 
-    <button type="submit" class="primeiro-login-submit-btn">Continuar para o Sistema</button>
+    <button type="submit" class="primeiro-login-submit-btn">Salvar e Continuar</button>
   </form>
 
   <div class="primeiro-login-info">
-    <p>Preencha pelo menos uma instituição e um curso para continuar</p>
+    <p>Adicione pelo menos uma instituição e um curso para continuar</p>
   </div>
 
 </main>
 
 <script src="/js/primeiro-login.js" defer></script>
-
 
 <%- include('../partials/footer') %>
