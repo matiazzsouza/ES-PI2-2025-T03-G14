@@ -41,7 +41,6 @@
                             <div class="cursos-list">
                                 <h4>📚 Cursos:</h4>
                                 <% 
-                                // Verificar se a instituição tem cursos
                                 const cursosDaInstituicao = instituicao.cursos && Array.isArray(instituicao.cursos) ? instituicao.cursos : [];
                                 %>
                                 <% if (cursosDaInstituicao.length > 0) { %>
@@ -50,12 +49,13 @@
                                             <li class="curso-item">
                                                 <span><%= curso.nome || 'Curso sem nome' %></span>
                                                 <div class="curso-actions">
-                                                    <button class="btn-tiny btn-add-disciplina" 
-                                                            data-curso-id="<%= curso.id %>"
-                                                            title="Adicionar Disciplina">➕</button>
-                                                    <button class="btn-tiny btn-ver-disciplinas"
-                                                            data-curso-id="<%= curso.id %>"
-                                                            title="Ver Disciplinas">📖</button>
+                                                    <!-- 🔥 BOTÃO ADICIONAR DISCIPLINA AGORA É UM LINK -->
+                                                    <a href="/curso/<%= curso.id %>/disciplinas" 
+                                                       class="btn-tiny btn-add-disciplina"
+                                                       title="Adicionar Disciplina">➕</a>
+                                                    <a href="/curso/<%= curso.id %>/disciplinas" 
+                                                       class="btn-tiny btn-ver-disciplinas"
+                                                       title="Ver Disciplinas">📖</a>
                                                 </div>
                                             </li>
                                         <% }); %>

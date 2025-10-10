@@ -36,6 +36,11 @@ import {
 } from "./utils/manda-redefinir";
 
 
+import {
+  exibirDisciplinas,
+  criarDisciplina
+} from "./controllers/disciplinas";
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -429,6 +434,14 @@ async function startServer() {
       });
     }
   });
+
+
+  //! --- DISCIPLINAS ---
+  app.get("/curso/:id/disciplinas", exibirDisciplinas);
+  app.post("/curso/:id/disciplinas", criarDisciplina);
+
+
+
 
   //! --- PÁGINA WEB ---
   app.get("/web", (req, res) => {

@@ -286,8 +286,6 @@ footer {
   text-decoration: underline;
   color: #0056b3;
 }
-
-
 /*! ================ HOMEPAGE ======================*/
 
 .home-container {
@@ -360,12 +358,14 @@ footer {
 }
 
 .instituicao-card {
-    background: black;
+    background: white;
     border: 1px solid #e1e5e9;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease;
+    position: relative;
+    z-index: 1;
 }
 
 .instituicao-card:hover {
@@ -399,6 +399,9 @@ footer {
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
 }
 
 .btn-small {
@@ -420,14 +423,34 @@ footer {
     color: #c53030;
 }
 
+/* 🔥 ESTILO PARA O LINK DE ADICIONAR DISCIPLINA */
 .btn-add-disciplina {
     background: #c6f6d5;
     color: #276749;
+    text-decoration: none;
+    display: inline-block;
 }
 
+.btn-add-disciplina:hover {
+    background: #9ae6b4;
+    color: #276749;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+/* 🔥 ESTILO PARA O LINK DE VER DISCIPLINAS */
 .btn-ver-disciplinas {
     background: #bee3f8;
     color: #2c5aa0;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-ver-disciplinas:hover {
+    background: #90cdf4;
+    color: #2c5aa0;
+    text-decoration: none;
+    transform: translateY(-1px);
 }
 
 /* Lista de Cursos */
@@ -553,10 +576,6 @@ footer {
         grid-template-columns: repeat(2, 1fr);
     }
 }
-
-
-
-
 
 /*! =============================================== PRIMEIRO LOGIN ===========================================================*/
 
