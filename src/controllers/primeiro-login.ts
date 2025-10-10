@@ -1,4 +1,4 @@
-import { getUserByEmail, setUserToSession, validateUserSession, getUserFromSession, User } from "./passainfos";
+import { getUserByEmail, setUserToSession, validateUserSession, getUserFromSession, User } from "../utils/passainfos";
 import { salvarInstituicoesECursos } from "../services/primeiro-login-service";
 
 /**
@@ -17,9 +17,9 @@ export function exibirPaginaPrimeiroLogin(req: any, res: any) {
   });
 }
 
-/**
- * 🔹 Processa o envio do formulário do primeiro login (POST /primeiro-login)
- */
+
+ // 🔹 Processa o envio do formulário do primeiro login (POST /primeiro-login)
+
 export async function processarPrimeiroLogin(req: any, res: any) {
   if (!validateUserSession(req.session)) {
     return res.redirect("/auth/login");

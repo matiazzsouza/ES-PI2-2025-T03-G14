@@ -1,20 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/styles.css">
-
-
-
+<%- include('../partials/header') %>
 
 <main class="recovery-main">
     <div class="recovery-container">
         <div class="recovery-header">
             <div class="logo">
-                <h1>🔐 NotaDez</h1>
+            <h1>Recuperação de Senha</h1>
             </div>
-            <h2>Recuperação de Senha</h2>
             <p>Informe seu email para recuperar sua senha</p>
         </div>
 
@@ -32,7 +23,7 @@
             </div>
         <% } %>
 
-        <form class="recovery-form" action="/auth/recuperar-senha" method="POST">
+        <form class="recovery-form" action="/auth/recuperacao" method="POST">
             <div class="form-group">
                 <label for="email">Email cadastrado</label>
                 <input 
@@ -40,21 +31,22 @@
                     id="email" 
                     name="email" 
                     required 
+                    autocomplete="email"
                     placeholder="seu.email@exemplo.com"
                     value="<%= email || '' %>"
                 >
             </div>
 
             <button type="submit" class="btn btn-primary btn-full">
-                🔒 Enviar Link de Recuperação
+                Enviar
             </button>
         </form>
 
         <div class="recovery-links">
-            <a href="/auth/login">↩️ Voltar para o Login</a>
-            <a href="/auth/registro">📝 Criar nova conta</a>
+            <a href="/auth/login"> Voltar para o Login</a>
+            <a href="/auth/registro">Criar nova conta</a>
         </div>
     </div>
 </main>
 
-
+<%- include('../partials/footer') %>

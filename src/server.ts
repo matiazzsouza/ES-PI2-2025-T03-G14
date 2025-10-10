@@ -17,12 +17,25 @@ import {
   setUserToSession, 
   clearUserSession,
   validateUserSession, 
-  getUserFromSession} from './utils/passainfos';
+  getUserFromSession,
+  setResetToken,
+  verifyResetToken,
+  updatePassword
+} from './utils/passainfos';
 
 import {
   exibirPaginaPrimeiroLogin,
-  processarPrimeiroLogin,
-} from "./utils/primeiro-login"; 
+  processarPrimeiroLogin
+} from "./controllers/primeiro-login"; 
+
+
+import {
+  generateVerificationToken,
+  sendPasswordResetEmail,
+  sendWelcomeEmail
+} from "./utils/manda-redefinir";
+
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -102,13 +115,11 @@ async function startServer() {
     }
   });
 
-//! --- PRIMEIRO LOGIN ---
+  //! --- PRIMEIRO LOGIN ---
   app.get("/primeiro-login", exibirPaginaPrimeiroLogin);
   app.post("/primeiro-login", processarPrimeiroLogin);
 
-
   //! --- LOGOUT --- 
-
   app.get("/auth/logout", (req, res) => {
     clearUserSession(req.session);
     res.redirect("/auth/login");
@@ -156,6 +167,9 @@ async function startServer() {
         });
       }
 
+      // 🔥 ENVIAR EMAIL DE BOAS-VINDAS
+      await sendWelcomeEmail(email, name);
+
       res.redirect("/auth/login?message=Cadastro realizado com sucesso!");
 
     } catch (err: any) {
@@ -201,6 +215,30 @@ async function startServer() {
         });
       }
 
+      // 🔥 GERAR E ENVIAR TOKEN DE RECUPERAÇÃO
+      const resetToken = generateVerificationToken();
+      const tokenSaved = await setResetToken(email, resetToken);
+      
+      if (!tokenSaved) {
+        return res.render("auth/recuperacao", {
+          title: "Recuperação de Senha",
+          error: "Erro ao processar solicitação. Tente novamente.",
+          message: null,
+          email: email
+        });
+      }
+
+      const emailSent = await sendPasswordResetEmail(email, resetToken);
+      
+      if (!emailSent) {
+        return res.render("auth/recuperacao", {
+          title: "Recuperação de Senha",
+          error: "Erro ao enviar email. Tente novamente.",
+          message: null,
+          email: email
+        });
+      }
+
       res.render("auth/recuperacao", {
         title: "Recuperação de Senha",
         error: null,
@@ -219,98 +257,178 @@ async function startServer() {
     }
   });
 
+  //! --- REDEFINIÇÃO DE SENHA ---
 
-  
+  app.get("/redefinir-senha/:token", async (req, res) => {
+    try {
+      const { token } = req.params;
+      
+      const user = await verifyResetToken(token);
+      
+      if (!user) {
+        return res.render("auth/redefinir-senha", {
+          title: "Link Inválido",
+          error: "Link de redefinição inválido ou expirado.",
+          token: null
+        });
+      }
+      
+      res.render("auth/redefinir-senha", {
+        title: "Redefinir Senha",
+        error: null,
+        token: token
+      });
+    } catch (error) {
+      console.error("Erro na redefinição:", error);
+      res.render("auth/redefinir-senha", {
+        title: "Erro",
+        error: "Erro ao processar solicitação.",
+        token: null
+      });
+    }
+  });
 
-//! --- HOMEPAGE ---
+  app.post("/redefinir-senha/:token", async (req, res) => {
+    try {
+      const { token } = req.params;
+      const { password, confirmPassword } = req.body;
+      
+      if (password !== confirmPassword) {
+        return res.render("auth/redefinir-senha", {
+          title: "Redefinir Senha",
+          error: "Senhas não coincidem!",
+          token: token
+        });
+      }
+      
+      const user = await verifyResetToken(token);
+      if (!user) {
+        return res.render("auth/redefinir-senha", {
+          title: "Link Inválido",
+          error: "Link de redefinição inválido ou expirado.",
+          token: null
+        });
+      }
+      
+      const passwordValidation = validatePassword(password);
+      if (!passwordValidation.valid) {
+        return res.render("auth/redefinir-senha", {
+          title: "Redefinir Senha",
+          error: passwordValidation.message,
+          token: token
+        });
+      }
+      
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const passwordUpdated = await updatePassword(user.id, hashedPassword);
+      
+      if (!passwordUpdated) {
+        return res.render("auth/redefinir-senha", {
+          title: "Erro",
+          error: "Erro ao atualizar senha. Tente novamente.",
+          token: token
+        });
+      }
+      
+      res.redirect("/auth/login?message=Senha redefinida com sucesso!");
+      
+    } catch (error) {
+      console.error("Erro ao redefinir senha:", error);
+      res.render("auth/redefinir-senha", {
+        title: "Erro",
+        error: "Erro ao redefinir senha. Tente novamente.",
+        token: req.params.token
+      });
+    }
+  });
 
-app.get("/home", async (req, res) => {
-  if (!validateUserSession(req.session)) { 
-    return res.redirect("/auth/login");
-  }
+  //! --- HOMEPAGE ---
 
-  const user = getUserFromSession(req.session);
-  
-  if (!user || !user.id) {
-    clearUserSession(req.session);
-    return res.redirect("/auth/login");
-  }
+  app.get("/home", async (req, res) => {
+    if (!validateUserSession(req.session)) { 
+      return res.redirect("/auth/login");
+    }
 
-  try {
-    // 🔥 BUSCAR INSTITUIÇÕES COM SEUS CURSOS
-    const [instituicoesComCursos]: any = await pool.query(
-      `SELECT 
-        i.id as instituicao_id,
-        i.nome as instituicao_nome,
-        i.created_at as instituicao_created_at,
-        c.id as curso_id,
-        c.nome as curso_nome,
-        c.created_at as curso_created_at
-       FROM instituicoes i
-       LEFT JOIN cursos c ON i.id = c.instituicao_id
-       WHERE i.user_id = ?
-       ORDER BY i.nome, c.nome`,
-      [user.id]
-    );
-
-    // 🔥 PROCESSAR OS DADOS: Agrupar cursos por instituição
-    const instituicoesMap = new Map();
+    const user = getUserFromSession(req.session);
     
-    instituicoesComCursos.forEach((row: any) => {
-      const instituicaoId = row.instituicao_id;
+    if (!user || !user.id) {
+      clearUserSession(req.session);
+      return res.redirect("/auth/login");
+    }
+
+    try {
+      // 🔥 BUSCAR INSTITUIÇÕES COM SEUS CURSOS
+      const [instituicoesComCursos]: any = await pool.query(
+        `SELECT 
+          i.id as instituicao_id,
+          i.nome as instituicao_nome,
+          i.created_at as instituicao_created_at,
+          c.id as curso_id,
+          c.nome as curso_nome,
+          c.created_at as curso_created_at
+          FROM instituicoes i
+          LEFT JOIN cursos c ON i.id = c.instituicao_id
+          WHERE i.user_id = ?
+          ORDER BY i.nome, c.nome`,
+        [user.id]
+      );
+
+      // 🔥 PROCESSAR OS DADOS: Agrupar cursos por instituição
+      const instituicoesMap = new Map();
       
-      if (!instituicoesMap.has(instituicaoId)) {
-        instituicoesMap.set(instituicaoId, {
-          id: instituicaoId,
-          nome: row.instituicao_nome,
-          created_at: row.instituicao_created_at,
-          cursos: []
-        });
-      }
-      
-      // Se existe um curso associado, adiciona à instituição
-      if (row.curso_id) {
-        instituicoesMap.get(instituicaoId).cursos.push({
-          id: row.curso_id,
-          nome: row.curso_nome,
-          created_at: row.curso_created_at
-        });
-      }
-    });
+      instituicoesComCursos.forEach((row: any) => {
+        const instituicaoId = row.instituicao_id;
+        
+        if (!instituicoesMap.has(instituicaoId)) {
+          instituicoesMap.set(instituicaoId, {
+            id: instituicaoId,
+            nome: row.instituicao_nome,
+            created_at: row.instituicao_created_at,
+            cursos: []
+          });
+        }
+        
+        // Se existe um curso associado, adiciona à instituição
+        if (row.curso_id) {
+          instituicoesMap.get(instituicaoId).cursos.push({
+            id: row.curso_id,
+            nome: row.curso_nome,
+            created_at: row.curso_created_at
+          });
+        }
+      });
 
-    const instituicoes = Array.from(instituicoesMap.values());
+      const instituicoes = Array.from(instituicoesMap.values());
 
-    // 🔥 CALCULAR TOTAL DE CURSOS
-    const totalCursos = instituicoes.reduce((total, instituicao) => {
-      return total + (instituicao.cursos ? instituicao.cursos.length : 0);
-    }, 0);
+      // 🔥 CALCULAR TOTAL DE CURSOS
+      const totalCursos = instituicoes.reduce((total, instituicao) => {
+        return total + (instituicao.cursos ? instituicao.cursos.length : 0);
+      }, 0);
 
-    console.log("🔍 Instituições processadas:", instituicoes);
-    console.log("🔍 Total de cursos:", totalCursos);
+      console.log("🔍 Instituições processadas:", instituicoes);
+      console.log("🔍 Total de cursos:", totalCursos);
 
-    res.render("home/home", { 
-      title: "Página Inicial",
-      user: user,
-      instituicoes: instituicoes,
-      totalCursos: totalCursos,
-      totalMaterias: 0,
-      totalNotas: 0
-    });
+      res.render("home/home", { 
+        title: "Página Inicial",
+        user: user,
+        instituicoes: instituicoes,
+        totalCursos: totalCursos,
+        totalMaterias: 0,
+        totalNotas: 0
+      });
 
-  } catch (error) {
-    console.error("Erro ao buscar dados para home:", error);
-    res.render("home/home", { 
-      title: "Página Inicial",
-      user: user,
-      instituicoes: [],
-      totalCursos: 0,
-      totalMaterias: 0,
-      totalNotas: 0
-    });
-  }
-});
-
-
+    } catch (error) {
+      console.error("Erro ao buscar dados para home:", error);
+      res.render("home/home", { 
+        title: "Página Inicial",
+        user: user,
+        instituicoes: [],
+        totalCursos: 0,
+        totalMaterias: 0,
+        totalNotas: 0
+      });
+    }
+  });
 
   //! --- PÁGINA WEB ---
   app.get("/web", (req, res) => {

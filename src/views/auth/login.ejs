@@ -1,29 +1,65 @@
 <%- include('../partials/header') %>
 
-<main class="login-container">
-  <h2>Login - NotaDez</h2>
+<main class="auth-main">
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo">
+                <h1>Login</h1>
+            </div>
+            <p>Entre em sua conta</p>
+        </div>
 
-  <% if (error) { %>
-    <div class="error"><%= error %></div>
-  <% } %>
+        <% if (error) { %>
+            <div class="alert alert-error">
+                <span>❌</span>
+                <%= error %>
+            </div>
+        <% } %>
 
-  <form action="/auth/login" method="POST">
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
+        <% if (locals.message) { %>
+            <div class="alert alert-success">
+                <span>✅</span>
+                <%= locals.message %>
+            </div>
+        <% } %>
 
-    <label for="password">Senha:</label>
-    <input type="password" id="password" name="password" required>
+        <form class="auth-form" action="/auth/login" method="POST">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    autocomplete="email"
+                    placeholder="seu.email@exemplo.com"
+                    value="<%= locals.email || '' %>"
+                >
+            </div>
 
-    <button type="submit">Entrar</button>
-  </form>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required 
+                    autocomplete="current-password"
+                    placeholder="Sua senha"
+                >
+            </div>
 
-  <div class="link">
-    <p>Não possui conta? <a href="/auth/registro">Crie uma aqui</a></p>
-    <p>Não lembra da senha? <a href="/auth/recuperacao">Clique aqui</a></p>
+            <button type="submit" class="btn btn-primary btn-full">
+                Entrar
+            </button>
+        </form>
 
-  </div>
-
+        <div class="auth-links">
+            <a href="/auth/registro"> Criar conta</a>
+            <br><br>
+            <a href="/auth/recuperacao"> Esqueci minha senha</a>
+        </div>
+    </div>
 </main>
 
 <%- include('../partials/footer') %>
-

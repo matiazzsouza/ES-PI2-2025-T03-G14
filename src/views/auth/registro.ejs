@@ -1,36 +1,100 @@
 <%- include('../partials/header') %>
 
-<main class="login-container">
-  <h2>Cadastro - NotaDez</h2>
+<main class="auth-main">
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo">
+                <h1>Criar Conta</h1>
+            </div>
+            <h2></h2>
+            <p>Preencha os dados para se cadastrar</p>
+        </div>
 
-  <% if (error) { %>
-    <div class="error"><%= error %></div>
-  <% } %>
+        <% if (error) { %>
+            <div class="alert alert-error">
+                <span>❌</span>
+                <%= error %>
+            </div>
+        <% } %>
 
-  <form action="/auth/registro" method="POST">
-    <label for="name">Nome completo:</label>
-    <input type="text" id="name" name="name" required>
+        <form class="auth-form" action="/auth/registro" method="POST">
+            <div class="form-group">
+                <label for="name">Nome completo</label>
+                <input 
+                    type="text" 
+                    id="name" 
+                    name="name" 
+                    required 
+                    autocomplete="name"
+                    placeholder="Seu nome completo"
+                    value="<%= locals.name || '' %>"
+                >
+            </div>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    autocomplete="email"
+                    placeholder="seu.email@exemplo.com"
+                    value="<%= locals.email || '' %>"
+                >
+            </div>
 
-    <label for="telefone">Telefone:</label>
-    <input type="telefone" id="telefone" name="telefone" required>
+            <div class="form-group">
+                <label for="telefone">Telefone</label>
+                <input 
+                    type="tel" 
+                    id="telefone" 
+                    name="telefone" 
+                    required 
+                    autocomplete="tel"
+                    placeholder="(11) 99999-9999"
+                    value="<%= locals.telefone || '' %>"
+                >
+            </div>
 
-    <label for="password">Senha:</label>
-    <input type="password" id="password" name="password" required>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required 
+                    autocomplete="new-password"
+                    placeholder="Sua senha"
+                    minlength="8"
+                >
+                <% if (passwordRequirements) { %>
+                    <small class="password-hint"><%= passwordRequirements %></small>
+                <% } %>
+            </div>
 
-    <label for="password">Confime sua senha:</label>
-    <input type="password" name="confirmPassword" placeholder="Confirmar senha" required>
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar Senha</label>
+                <input 
+                    type="password" 
+                    id="confirmPassword" 
+                    name="confirmPassword" 
+                    required 
+                    autocomplete="new-password"
+                    placeholder="Confirme sua senha"
+                    minlength="8"
+                >
+            </div>
 
+            <button type="submit" class="btn btn-primary btn-full">
+                Criar Conta
+            </button>
+        </form>
 
-
-    <button type="submit">Cadastrar</button>
-  </form>
-
-  <div class="link">
-    <p>Já possui conta? <a href="/auth/login">Faça login aqui</a></p>
-  </div>
+        <div class="auth-links">
+            <a href="/auth/login">Já tenho uma conta</a>
+        </div>
+    </div>
 </main>
 
 <%- include('../partials/footer') %>
