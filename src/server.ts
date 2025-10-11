@@ -28,19 +28,34 @@ import {
   processarPrimeiroLogin
 } from "./controllers/primeiro-login"; 
 
-
 import {
   generateVerificationToken,
   sendPasswordResetEmail,
   sendWelcomeEmail
 } from "./utils/manda-redefinir";
 
-
 import {
   exibirDisciplinas,
-  criarDisciplina
-} from "./controllers/disciplinas";
+  exibirAddDisciplina,
+  criarDisciplina,
+  editarDisciplina,
+  excluirDisciplina
+} from './controllers/disciplinas';
 
+// Importar APIs para AJAX (suas rotas existentes)
+import {
+  listarTurmasPorDisciplina,
+  criarTurma,
+  obterTurma,
+  editarTurma,
+  excluirTurma
+} from './controllers/turmas';
+
+// Importar rotas de páginas (novas rotas para telas EJS)
+import {
+  exibirAddTurmas,
+  criarMultiplasTurmas
+} from './controllers/turmas-routes';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -435,13 +450,27 @@ async function startServer() {
     }
   });
 
-
   //! --- DISCIPLINAS ---
   app.get("/curso/:id/disciplinas", exibirDisciplinas);
-  app.post("/curso/:id/disciplinas", criarDisciplina);
+  app.get("/curso/:id/disciplinas/add", exibirAddDisciplina);
+  app.post("/curso/:id/disciplinas/add", criarDisciplina);
 
+  // API Disciplinas
+  app.put("/api/disciplinas/:id", editarDisciplina);
+  app.delete("/api/disciplinas/:id", excluirDisciplina);
 
+  //! --- TURMAS ---
+  
+  // API Turmas (AJAX) - Suas rotas existentes
+  app.get("/api/disciplinas/:id/turmas", listarTurmasPorDisciplina);
+  app.post("/api/disciplinas/:id/turmas", criarTurma);
+  app.get("/api/turmas/:id", obterTurma);
+  app.put("/api/turmas/:id", editarTurma);
+  app.delete("/api/turmas/:id", excluirTurma);
 
+  // Páginas Turmas (EJS) - Novas rotas para telas
+  app.get("/disciplina/:id/turmas/add", exibirAddTurmas);
+  app.post("/disciplina/:id/turmas/multiple", criarMultiplasTurmas);
 
   //! --- PÁGINA WEB ---
   app.get("/web", (req, res) => {

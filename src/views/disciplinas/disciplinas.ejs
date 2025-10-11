@@ -2,157 +2,140 @@
 
 <main class="disciplinas-main">
     <div class="disciplinas-container">
-        <!-- Header com breadcrumb -->
+        <!-- Header -->
         <div class="disciplinas-header">
             <div class="breadcrumb">
-                <a href="/home">🏠 Home</a> / 
-                <span>Disciplinas - <%= curso.nome %></span>
+                <a href="/home">Home</a> / 
+                <span>Disciplinas</span>
             </div>
-            <h1>Disciplinas</h1>
-            <p class="curso-info">Curso: <strong><%= curso.nome %></strong></p>
+            <div class="header-actions">
+                <h1>Disciplinas</h1>
+                <% if (curso && curso.id) { %>
+                    <a href="/curso/<%= curso.id %>/disciplinas/add" class="btn btn-primary">
+                        Adicionar Disciplina
+                    </a>
+                <% } %>
+            </div>
+            <% if (curso && curso.nome) { %>
+                <div class="curso-selecionado">
+                    <p class="curso-info">Curso: <strong><%= curso.nome %></strong></p>
+                    <% if (instituicao && instituicao.nome) { %>
+                        <p class="instituicao-info">Instituição: <strong><%= instituicao.nome %></strong></p>
+                    <% } %>
+                </div>
+            <% } %>
         </div>
 
-        <!-- Mensagens de erro/sucesso -->
+        <!-- Mensagens -->
         <% if (error) { %>
             <div class="alert alert-error">
-                <span>❌</span>
+                <span class="alert-icon">!</span>
                 <%= error %>
+            </div>
+        <% } %>
+        
+        <% if (success) { %>
+            <div class="alert alert-success">
+                <span class="alert-icon">✓</span>
+                <%= success %>
             </div>
         <% } %>
 
         <div class="disciplinas-content">
-            <!-- Left Panel - Formulário -->
-            <div class="left-panel">
-                <section class="form-section">
-                    <h2>📚 Adicionar Disciplina</h2>
-                    <form class="disciplina-form" action="/curso/<%= curso.id %>/disciplinas" method="POST">
-                        <div class="form-group">
-                            <label for="nome">Nome da Disciplina *</label>
-                            <input 
-                                type="text" 
-                                id="nome" 
-                                name="nome" 
-                                required 
-                                autocomplete="off"
-                                placeholder="Ex: Cálculo I"
-                                value="<%= formData && formData.nome || '' %>"
-                            >
-                        </div>
-
-                        <div class="form-group">
-                            <label for="sigla">Sigla</label>
-                            <input 
-                                type="text" 
-                                id="sigla" 
-                                name="sigla" 
-                                autocomplete="off"
-                                placeholder="Ex: CAL1"
-                                value="<%= formData && formData.sigla || '' %>"
-                            >
-                        </div>
-
-                        <div class="form-group">
-                            <label for="codigo">Código</label>
-                            <input 
-                                type="text" 
-                                id="codigo" 
-                                name="codigo" 
-                                autocomplete="off"
-                                placeholder="Ex: ES001"
-                                value="<%= formData && formData.codigo || '' %>"
-                            >
-                        </div>
-
-                        <div class="form-group">
-                            <label for="periodo">Período *</label>
-                            <input 
-                                type="number" 
-                                id="periodo" 
-                                name="periodo" 
-                                min="1" 
-                                max="20"
-                                value="<%= formData && formData.periodo || '1' %>"
-                                required
-                            >
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-full">
-                            💾 Salvar Disciplina
-                        </button>
-                    </form>
-                </section>
-            </div>
-
-            <!-- Right Panel - Lista de Disciplinas -->
-            <div class="right-panel">
-                <section class="disciplinas-list">
-                    <h2>📖 Disciplinas Cadastradas</h2>
-                    
-                    <% if (disciplinas && disciplinas.length > 0) { %>
-                        <div class="disciplinas-grid">
-                            <% disciplinas.forEach(disciplina => { %>
-                                <div class="disciplina-card">
-                                    <div class="card-header">
-                                        <h3><%= disciplina.nome %></h3>
-                                        <button class="btn-add-turma" 
-                                                data-disciplina-id="<%= disciplina.id %>"
-                                                data-disciplina-nome="<%= disciplina.nome %>">
-                                            ➕
-                                        </button>
-                                    </div>
-                                    
-                                    <div class="card-details">
-                                        <% if (disciplina.sigla) { %>
-                                            <p><strong>Sigla:</strong> <%= disciplina.sigla %></p>
-                                        <% } %>
-                                        <% if (disciplina.codigo) { %>
-                                            <p><strong>Código:</strong> <%= disciplina.codigo %></p>
-                                        <% } %>
-                                        <p><strong>Período:</strong> <%= disciplina.periodo %>º</p>
-                                        <p><strong>Criada em:</strong> 
-                                            <%= new Date(disciplina.created_at).toLocaleDateString('pt-BR') %>
-                                        </p>
-                                    </div>
-
-                                    <div class="turmas-section">
-                                        <h4>🏫 Turmas</h4>
-                                        <ul class="turmas-list">
-                                            <!-- Turmas serão carregadas via AJAX -->
-                                            <li class="empty-message">Nenhuma turma cadastrada</li>
-                                        </ul>
-                                    </div>
+            <% if (disciplinas && disciplinas.length > 0) { %>
+                <div class="disciplinas-grid">
+                    <% disciplinas.forEach(disciplina => { %>
+                        <div class="disciplina-card" data-disciplina-id="<%= disciplina.id %>">
+                            <div class="card-header">
+                                <h3><%= disciplina.nome %></h3>
+                                <div class="card-actions">
+                                    <button class="btn-edit" title="Editar Disciplina">
+                                        <span class="icon-edit">Editar</span>
+                                    </button>
+                                    <button class="btn-delete" title="Excluir Disciplina">
+                                        <span class="icon-delete">Excluir</span>
+                                    </button>
                                 </div>
-                            <% }); %>
+                            </div>
+                            
+                            <div class="card-details">
+                                <% if (disciplina.sigla) { %>
+                                    <p><strong>Sigla:</strong> <%= disciplina.sigla %></p>
+                                <% } %>
+                                <% if (disciplina.codigo) { %>
+                                    <p><strong>Código:</strong> <%= disciplina.codigo %></p>
+                                <% } %>
+                                <p><strong>Período:</strong> <%= disciplina.periodo %></p>
+                            </div>
+
+                            <!-- Turmas -->
+                            <div class="turmas-section">
+                                <div class="turmas-header">
+                                    <h4>Turmas</h4>
+                                    <!-- BOTÃO ATUALIZADO: Agora vai para tela separada -->
+                                    <a href="/disciplina/<%= disciplina.id %>/turmas/add" class="btn-add-turma" title="Adicionar Turma">
+                                        <span class="icon-add">+</span>
+                                    </a>
+                                </div>
+                                <% if (disciplina.turmas && disciplina.turmas.length > 0) { %>
+                                    <ul class="turmas-list">
+                                        <% disciplina.turmas.forEach(turma => { %>
+                                            <li class="turma-item">
+                                                <div class="turma-info">
+                                                    <strong><%= turma.nome %></strong>
+                                                    <% if (turma.dia_semana || turma.horario || turma.local) { %>
+                                                        <div class="turma-details">
+                                                            <% if (turma.dia_semana) { %>
+                                                                <span><%= turma.dia_semana %></span>
+                                                            <% } %>
+                                                            <% if (turma.horario) { %>
+                                                                <span><%= turma.horario %></span>
+                                                            <% } %>
+                                                            <% if (turma.local) { %>
+                                                                <span><%= turma.local %></span>
+                                                            <% } %>
+                                                        </div>
+                                                    <% } %>
+                                                </div>
+                                                <div class="turma-actions">
+                                                    <button class="btn-alunos" data-turma-id="<%= turma.id %>" title="Gerenciar Alunos">
+                                                        <span class="icon-alunos">Alunos</span>
+                                                    </button>
+                                                    <button class="btn-edit-turma" data-turma-id="<%= turma.id %>" title="Editar Turma">
+                                                        <span class="icon-edit">Editar</span>
+                                                    </button>
+                                                    <button class="btn-delete-turma" data-turma-id="<%= turma.id %>" title="Excluir Turma">
+                                                        <span class="icon-delete">Excluir</span>
+                                                    </button>
+                                                </div>
+                                            </li>
+                                        <% }); %>
+                                    </ul>
+                                <% } else { %>
+                                    <p class="empty-message">Nenhuma turma cadastrada</p>
+                                <% } %>
+                            </div>
                         </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <p>Nenhuma disciplina cadastrada ainda.</p>
+                    <% if (curso && curso.id) { %>
+                        <a href="/curso/<%= curso.id %>/disciplinas/add" class="btn btn-primary">
+                            Adicionar Primeira Disciplina
+                        </a>
                     <% } else { %>
-                        <div class="empty-state">
-                            <p>📭 Nenhuma disciplina cadastrada ainda.</p>
-                            <p>Adicione sua primeira disciplina usando o formulário ao lado.</p>
-                        </div>
+                        <a href="/home" class="btn btn-secondary">
+                            Voltar para Home
+                        </a>
                     <% } %>
-                </section>
-            </div>
+                </div>
+            <% } %>
         </div>
     </div>
 </main>
 
-<!-- Modal para adicionar turma -->
-<div id="turmaModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h3>Adicionar Turma</h3>
-        <p id="modalDisciplinaNome"></p>
-        <form id="turmaForm">
-            <input type="hidden" id="modalDisciplinaId">
-            <div class="form-group">
-                <label for="turmaNome">Nome da Turma *</label>
-                <input type="text" id="turmaNome" required autocomplete="off" placeholder="Ex: Turma A, Noturno">
-            </div>
-            <button type="submit" class="btn btn-primary">💾 Salvar Turma</button>
-        </form>
-    </div>
-</div>
-
-<script> src="/js/discplinas.js"</script>
+<script src="/js/disciplinas.js"></script>
 
 <%- include('../partials/footer') %>

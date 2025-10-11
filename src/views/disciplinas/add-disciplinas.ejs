@@ -1,0 +1,113 @@
+<%- include('../partials/header') %>
+
+<main class="add-disciplinas-main">
+    <div class="add-disciplinas-container">
+        <!-- Header -->
+        <div class="add-disciplinas-header">
+            <div class="breadcrumb">
+                <a href="/home">Home</a> / 
+                <% if (curso && curso.id) { %>
+                    <a href="/curso/<%= curso.id %>/disciplinas">Disciplinas</a> /
+                <% } %>
+                <span>Adicionar Disciplina</span>
+            </div>
+            <h1>Adicionar Disciplina</h1>
+            <% if (curso && curso.nome) { %>
+                <div class="curso-selecionado">
+                    <p class="curso-info">Curso: <strong><%= curso.nome %></strong></p>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Mensagens -->
+        <% if (error) { %>
+            <div class="alert alert-error">
+                <span class="alert-icon">!</span>
+                <%= error %>
+            </div>
+        <% } %>
+        
+        <% if (success) { %>
+            <div class="alert alert-success">
+                <span class="alert-icon">✓</span>
+                <%= success %>
+            </div>
+        <% } %>
+
+        <div class="form-container">
+            <section class="form-section">
+                <h2>Nova Disciplina</h2>
+                <form class="disciplina-form" action="/curso/<%= curso.id %>/disciplinas/add" method="POST">
+                    <div class="form-group required">
+                        <label for="nome">Nome da Disciplina</label>
+                        <input 
+                            type="text" 
+                            id="nome" 
+                            name="nome" 
+                            required 
+                            autocomplete="off"
+                            placeholder="Ex: Cálculo I, Programação Web"
+                            value="<%= formData && formData.nome || '' %>"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sigla">Sigla</label>
+                        <input 
+                            type="text" 
+                            id="sigla" 
+                            name="sigla" 
+                            autocomplete="off"
+                            placeholder="Ex: CAL1, PWEB"
+                            value="<%= formData && formData.sigla || '' %>"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="codigo">Código</label>
+                        <input 
+                            type="text" 
+                            id="codigo" 
+                            name="codigo" 
+                            autocomplete="off"
+                            placeholder="Ex: ES001, CC101"
+                            value="<%= formData && formData.codigo || '' %>"
+                        >
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="periodo">Período</label>
+                        <select id="periodo" name="periodo" required>
+                            <option value="">Selecione o período</option>
+                            <% for(let i = 1; i <= 12; i++) { %>
+                                <option value="<%= i %>" 
+                                    <%= (formData && formData.periodo == i) ? 'selected' : '' %>>
+                                    <%= i %> Período
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            Salvar Disciplina
+                        </button>
+                        <% if (curso && curso.id) { %>
+                            <a href="/curso/<%= curso.id %>/disciplinas" class="btn btn-secondary">
+                                Voltar para Disciplinas
+                            </a>
+                        <% } else { %>
+                            <a href="/home" class="btn btn-secondary">
+                                Voltar para Home
+                            </a>
+                        <% } %>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+</main>
+
+<link rel="stylesheet" href="/css/add-disciplinas.css">
+
+<%- include('../partials/footer') %>

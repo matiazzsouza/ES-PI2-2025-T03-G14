@@ -1,0 +1,99 @@
+<%- include('../partials/header') %>
+
+<main class="add-turmas-main">
+    <div class="add-turmas-container">
+        <!-- Header -->
+        <div class="add-turmas-header">
+            <div class="breadcrumb">
+                <a href="/home">Home</a> / 
+                <a href="/curso/<%= curso.id %>/disciplinas">Disciplinas</a> / 
+                <span>Adicionar Turmas</span>
+            </div>
+            <div class="header-actions">
+                <h1>Adicionar Turmas</h1>
+            </div>
+            <div class="disciplina-selecionada">
+                <p class="disciplina-info">Disciplina: <strong><%= disciplina.nome %></strong></p>
+                <p class="curso-info">Curso: <strong><%= curso.nome %></strong></p>
+            </div>
+        </div>
+
+        <!-- Mensagens -->
+        <% if (error) { %>
+            <div class="alert alert-error">
+                <span class="alert-icon">!</span>
+                <%= error %>
+            </div>
+        <% } %>
+
+        <div class="add-turmas-content">
+            <form id="turmasForm" action="/disciplina/<%= disciplina.id %>/turmas/multiple" method="POST">
+                <div id="turmas-container">
+                    <!-- Primeira turma (sempre visível) -->
+                    <div class="turma-form-group" data-index="0">
+                        <div class="turma-header">
+                            <h3>Turma 1</h3>
+                            <button type="button" class="btn-remove-turma" style="display: none;">×</button>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="turmaNome_0">Nome da Turma *</label>
+                                <input type="text" id="turmaNome_0" name="turmas[0][nome]" required 
+                                       placeholder="Ex: Turma A, Noturno, Matutino">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="turmaDiaSemana_0">Dia da Semana</label>
+                                <select id="turmaDiaSemana_0" name="turmas[0][dia_semana]">
+                                    <option value="">Selecione o dia</option>
+                                    <option value="Segunda">Segunda-feira</option>
+                                    <option value="Terça">Terça-feira</option>
+                                    <option value="Quarta">Quarta-feira</option>
+                                    <option value="Quinta">Quinta-feira</option>
+                                    <option value="Sexta">Sexta-feira</option>
+                                    <option value="Sábado">Sábado</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="turmaHorario_0">Horário</label>
+                                <input type="time" id="turmaHorario_0" name="turmas[0][horario]">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="turmaLocal_0">Local</label>
+                            <input type="text" id="turmaLocal_0" name="turmas[0][local]" 
+                                   placeholder="Ex: Sala 101, Laboratório 2">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions-turmas">
+                    <button type="button" id="addTurmaBtn" class="btn btn-secondary">
+                        + Adicionar Outra Turma
+                    </button>
+                    
+                    <div class="main-actions">
+                        <button type="submit" class="btn btn-primary">
+                            Salvar Todas as Turmas
+                        </button>
+                        <a href="/curso/<%= curso.id %>/disciplinas" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script src="/js/add-turmas.js"></script>
+
+
+
+
+<%- include('../partials/footer') %>

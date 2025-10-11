@@ -2,7 +2,7 @@
 
 <main class="home-container">
     <div class="welcome-card">
-        <h1>🎉 Bem-vindo, <%= user ? user.name : 'Usuário' %>!</h1>
+        <h1>Bem-vindo, <%= user ? user.name : 'Usuário' %>!</h1>
         <p>Gerencie suas instituições e cursos abaixo.</p>
         
         <div class="quick-actions">
@@ -10,13 +10,13 @@
             <br><br><br>
             <div class="action-buttons">
                 <a href="/instituicoes/nova" class="btn btn-primary">➕ Nova Instituição</a> 
-                <a href="/auth/logout" class="btn btn-secondary">🚪 Sair</a>
+                <a href="/auth/logout" class="btn btn-secondary">Sair</a>
             </div>
         </div>
 
         <!-- Cards das Instituições -->
         <div class="instituicoes-section">
-            <h2>🏫 Minhas Instituições</h2>
+            <h2>Minhas Instituições</h2>
             
             <% 
             // Definir variáveis seguras para evitar erros
@@ -39,7 +39,7 @@
                             </div>
                             
                             <div class="cursos-list">
-                                <h4>📚 Cursos:</h4>
+                                <h4>Cursos:</h4>
                                 <% 
                                 const cursosDaInstituicao = instituicao.cursos && Array.isArray(instituicao.cursos) ? instituicao.cursos : [];
                                 %>
@@ -49,10 +49,11 @@
                                             <li class="curso-item">
                                                 <span><%= curso.nome || 'Curso sem nome' %></span>
                                                 <div class="curso-actions">
-                                                    <!-- 🔥 BOTÃO ADICIONAR DISCIPLINA AGORA É UM LINK -->
-                                                    <a href="/curso/<%= curso.id %>/disciplinas" 
+                                                    <!-- 🔥 BOTÃO ADICIONAR DISCIPLINA - CORRIGIDO -->
+                                                    <a href="/curso/<%= curso.id %>/disciplinas/add" 
                                                        class="btn-tiny btn-add-disciplina"
                                                        title="Adicionar Disciplina">➕</a>
+                                                    <!-- 🔥 BOTÃO VER DISCIPLINAS - CORRIGIDO -->
                                                     <a href="/curso/<%= curso.id %>/disciplinas" 
                                                        class="btn-tiny btn-ver-disciplinas"
                                                        title="Ver Disciplinas">📖</a>
@@ -76,7 +77,7 @@
                 </div>
             <% } else { %>
                 <div class="empty-state">
-                    <p>📝 Você ainda não possui instituições cadastradas.</p>
+                    <p>Você ainda não possui instituições cadastradas.</p>
                     <a href="/instituicoes/nova" class="btn btn-primary">➕ Cadastrar Primeira Instituição</a>
                 </div>
             <% } %>
