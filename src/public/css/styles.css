@@ -521,23 +521,24 @@ footer {
 /* INSTITUIÇÕES EM GRID HORIZONTAL */
 .instituicoes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Aumente o minmax */
-  gap: 2  .5rem;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 1.5rem;
+  justify-items: stretch; 
 }
 
 .instituicao-card {
   background: white;
   border-radius: 16px;
-  padding: 2.5rem;
+  padding: 1.5rem; /* Mantenha o padding original */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border-left: 4px solid #667eea;
   transition: all 0.3s ease;
   border: 1px solid #e1e5e9;
   display: flex;
   flex-direction: column;
-  height: fit-content;
-  min-height: 350px; /* Adicionei altura mínima */
+
 }
+
 
 .instituicao-card:hover {
   transform: translateY(-4px);
@@ -627,6 +628,7 @@ footer {
   flex-direction: column;
   gap: 8px;
 }
+
 
 .curso-item {
   background: #f8f9fa;
