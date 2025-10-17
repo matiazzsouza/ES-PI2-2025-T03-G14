@@ -450,7 +450,7 @@ footer {
   color: #5a67d8;
 }
 
-/* ===================== TELA HOME ===================== */
+/*! ===================== TELA HOME ===================== */
 .home-container {
   padding: 2rem;
   max-width: 1200px;
@@ -461,12 +461,8 @@ footer {
 }
 
 .home-container h1, h2 {
-
   color: white;
-
-
 }
-
 
 .welcome-card {
   background: white;
@@ -514,7 +510,7 @@ footer {
 }
 
 .instituicoes-section h2 {
-  color: #2c3e50;
+  color: white;
   margin-bottom: 1.5rem;
   font-size: 1.6rem;
   font-weight: 600;
@@ -522,20 +518,25 @@ footer {
   padding-bottom: 0.5rem;
 }
 
+/* INSTITUIÇÕES EM GRID HORIZONTAL */
 .instituicoes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Aumente o minmax */
+  gap: 2  .5rem;
 }
 
 .instituicao-card {
   background: white;
   border-radius: 16px;
-  padding: 1.5rem;
+  padding: 2.5rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border-left: 4px solid #667eea;
   transition: all 0.3s ease;
   border: 1px solid #e1e5e9;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  min-height: 350px; /* Adicionei altura mínima */
 }
 
 .instituicao-card:hover {
@@ -594,126 +595,183 @@ footer {
   background-color: #f8d7da !important;
 }
 
-.cursos-list h4 {
-  color: #2c3e50;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
+/* CURSOS NA VERTICAL DENTRO DO CARD */
+.cursos-section {
+  margin-top: 15px;
+  flex: 1;
 }
 
-.cursos-list ul {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 1.5rem 0;
-}
-
-.curso-item {
+.cursos-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  margin-bottom: 12px;
+}
+
+.cursos-header h4 {
+  margin: 0;
+  color: #34495e;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+.cursos-container {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 5px;
+  margin-bottom: 10px;
+}
+
+.cursos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.curso-item {
   background: #f8f9fa;
-  margin-bottom: 0.5rem;
+  border: 1px solid #e9ecef;
   border-radius: 8px;
-  border: 1px solid #e1e5e9;
+  padding: 12px;
   transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .curso-item:hover {
   background: #e9ecef;
   border-color: #a5b4fc;
+  transform: translateX(2px);
 }
 
-.curso-item span {
-  font-weight: 500;
-  color: #2c3e50;
+.curso-info {
   flex: 1;
+}
+
+.curso-info strong {
+  color: #2c3e50;
+  font-size: 1em;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.curso-details {
+  font-size: 0.8em;
+  color: #6c757d;
 }
 
 .curso-actions {
   display: flex;
-  gap: 0.5rem;
-}
-
-.btn-tiny {
-  padding: 0.5rem 0.75rem;
-  border: none;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
+  gap: 6px;
   align-items: center;
-  justify-content: center;
-  min-width: 2.5rem;
-  font-weight: 600;
 }
 
-.btn-add-disciplina {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  color: white;
-  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
-}
-
-.btn-ver-disciplinas {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-  color: white;
-  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
-}
-
-.btn-tiny:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  text-decoration: none;
-  color: white;
-}
-
-.instituicao-footer {
-  padding-top: 1rem;
-  border-top: 1px solid #e1e5e9;
-}
-
+/* Botões */
 .btn-add-curso {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  background: #28a745;
   color: white;
-  padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border-radius: 6px;
+  padding: 6px 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
+  font-size: 0.8em;
+  transition: all 0.2s ease;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .btn-add-curso:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+  background: #218838;
+  transform: translateY(-1px);
 }
 
+.btn-edit, .btn-delete {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  font-size: 0.8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.btn-edit:hover {
+  background: #e9ecef;
+}
+
+.btn-delete:hover {
+  background: #f8d7da;
+}
+
+.btn-disciplinas {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.75em;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-disciplinas:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+  text-decoration: none;
+  color: white;
+}
+
+/* Scrollbar personalizada para vertical */
+.cursos-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cursos-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.cursos-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.cursos-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Estados vazios */
 .empty-state {
   text-align: center;
-  padding: 3rem 2rem;
-  color: #666;
-  background: #f8f9fa;
+  padding: 40px 20px;
+  color: #6c757d;
+  background: white;
   border-radius: 12px;
   border: 2px dashed #dee2e6;
 }
 
 .empty-state p {
-  margin: 0.5rem 0;
-  font-size: 1.1rem;
+  margin-bottom: 15px;
+  font-size: 1.1em;
 }
 
-.no-cursos {
+.empty-message {
   text-align: center;
   color: #6c757d;
   font-style: italic;
-  padding: 1rem;
+  padding: 1.5rem;
   background: #f8f9fa;
   border-radius: 8px;
   border: 1px dashed #dee2e6;
+  margin: 0;
+  font-size: 0.9em;
 }
 
 .system-info {
@@ -737,6 +795,7 @@ footer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .info-item {
@@ -765,6 +824,140 @@ footer {
   font-size: 0.9rem;
   opacity: 0.9;
   font-weight: 500;
+}
+
+/* Header */
+.home-header {
+  margin-bottom: 2rem;
+}
+
+.breadcrumb {
+  color: white;
+  margin-bottom: 1rem;
+  font-size: 0.9em;
+}
+
+.breadcrumb a {
+  color: #a5b4fc;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-actions h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Alertas */
+.alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.alert-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.alert-success {
+  background: #d1edff;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-icon {
+  font-weight: bold;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .home-container {
+    padding: 1rem;
+  }
+  
+  .instituicoes-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .instituicao-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .instituicao-actions {
+    align-self: flex-end;
+  }
+  
+  .curso-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .curso-actions {
+    align-self: flex-end;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .info-item {
+    padding: 1.5rem 1rem;
+  }
+  
+  .info-item .number {
+    font-size: 2rem;
+  }
+  
+  .cursos-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .btn-add-curso {
+    align-self: flex-start;
+  }
+}
+
+@media (min-width: 1200px) {
+  .instituicoes-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1500px) {
+  .instituicoes-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 /*! ===================== TELA DISCIPLINAS ===================== */

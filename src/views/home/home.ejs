@@ -78,11 +78,15 @@
                             <div class="instituicao-header">
                                 <h3><%= instituicao.nome %></h3>
                                 <div class="instituicao-actions">
-                                    <button class="btn-edit-instituicao" data-instituicao-id="<%= instituicao.id %>" title="Editar Instituição">
-                                        <span class="icon-edit">Editar</span>
+                                    <button class="btn-edit btn-edit-instituicao" 
+                                            data-instituicao-id="<%= instituicao.id %>"
+                                            title="Editar Instituição">
+                                        <span class="icon-edit">✏️</span>
                                     </button>
-                                    <button class="btn-delete-instituicao" data-instituicao-id="<%= instituicao.id %>" title="Excluir Instituição">
-                                        <span class="icon-delete">Excluir</span>
+                                    <button class="btn-delete btn-delete-instituicao" 
+                                            data-instituicao-id="<%= instituicao.id %>"
+                                            title="Excluir Instituição">
+                                        <span class="icon-delete">🗑️</span>
                                     </button>
                                 </div>
                             </div>
@@ -91,38 +95,49 @@
                                 <p><strong>Criada em:</strong> <%= new Date(instituicao.created_at).toLocaleDateString('pt-BR') %></p>
                             </div>
 
-                            <!-- Cursos da Instituição -->
+                            <!-- Cursos da Instituição NA VERTICAL -->
                             <div class="cursos-section">
-                                <div class="cursos">
-                                    <h4>Cursos</h4>
-                                    <button class="btn-add-curso" data-instituicao-id="<%= instituicao.id %>" title="Adicionar Curso">
-                                        <span class="icon-add">Adicionar</span>
+                                <div class="cursos-header">
+                                    <h4>Cursos (<%= instituicao.cursos ? instituicao.cursos.length : 0 %>)</h4>
+                                    <button class="btn-add-curso" 
+                                            data-instituicao-id="<%= instituicao.id %>"
+                                            title="Adicionar Curso">
+                                        <span class="icon-add">➕ Adicionar Curso</span>
                                     </button>
                                 </div>
+                                
                                 <% if (instituicao.cursos && instituicao.cursos.length > 0) { %>
-                                    <ul class="cursos-list">
-                                        <% instituicao.cursos.forEach(curso => { %>
-                                            <li class="curso-item">
-                                                <div class="curso-info">
-                                                    <strong><%= curso.nome %></strong>
-                                                    <div class="curso-details">
-                                                        <span>Criado em: <%= new Date(curso.created_at).toLocaleDateString('pt-BR') %></span>
+                                    <div class="cursos-container">
+                                        <div class="cursos-list">
+                                            <% instituicao.cursos.forEach(curso => { %>
+                                                <div class="curso-item">
+                                                    <div class="curso-info">
+                                                        <strong><%= curso.nome %></strong>
+                                                        <div class="curso-details">
+                                                            <span>Criado em: <%= new Date(curso.created_at).toLocaleDateString('pt-BR') %></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="curso-actions">
+                                                        <a href="/curso/<%= curso.id %>/disciplinas" 
+                                                           class="btn-disciplinas" 
+                                                           title="Ver Disciplinas">
+                                                            📚 Disciplinas
+                                                        </a>
+                                                        <button class="btn-edit btn-edit-curso" 
+                                                                data-curso-id="<%= curso.id %>"
+                                                                title="Editar Curso">
+                                                            <span class="icon-edit">✏️</span>
+                                                        </button>
+                                                        <button class="btn-delete btn-delete-curso" 
+                                                                data-curso-id="<%= curso.id %>"
+                                                                title="Excluir Curso">
+                                                            <span class="icon-delete">🗑️</span>
+                                                        </button>
                                                     </div>
                                                 </div>
-                                                <div class="curso-actions">
-                                                    <a href="/curso/<%= curso.id %>/disciplinas" class="btn-disciplinas" title="Ver Disciplinas">
-                                                        <span class="icon-disciplinas">Disciplinas</span>
-                                                    </a>
-                                                    <button class="btn-edit-curso" data-curso-id="<%= curso.id %>" title="Editar Curso">
-                                                        <span class="icon-edit">Editar</span>
-                                                    </button>
-                                                    <button class="btn-delete-curso" data-curso-id="<%= curso.id %>" title="Excluir Curso">
-                                                        <span class="icon-delete">Excluir</span>
-                                                    </button>
-                                                </div>
-                                            </li>
-                                        <% }); %>
-                                    </ul>
+                                            <% }); %>
+                                        </div>
+                                    </div>
                                 <% } else { %>
                                     <p class="empty-message">Nenhum curso cadastrado</p>
                                 <% } %>
