@@ -23,7 +23,6 @@ import {
   updatePassword
 } from './utils/passainfos';
 
-
 import {
   exibirNovaInstituicao,
   criarInstituicao,
@@ -33,7 +32,6 @@ import {
   editarCurso,
   excluirCurso
 } from './controllers/instituicoes';
-
 
 import {
   exibirPaginaPrimeiroLogin,
@@ -51,7 +49,9 @@ import {
   exibirAddDisciplina,
   criarDisciplina,
   editarDisciplina,
-  excluirDisciplina
+  excluirDisciplina,
+  listarTodasDisciplinas,
+  obterDisciplinaPorId
 } from './controllers/disciplinas';
 
 import {
@@ -481,10 +481,12 @@ app.post("/api/instituicoes/:id/cursos", criarCurso);
   app.get("/curso/:id/disciplinas/add", exibirAddDisciplina);
   app.post("/curso/:id/disciplinas/add", criarDisciplina);
 
-  // API Disciplinas
+  // API Disciplinas - ROTAS ADICIONADAS
+  app.get("/api/disciplinas", listarTodasDisciplinas);
+  app.get("/api/disciplinas/:id", obterDisciplinaPorId);
   app.put("/api/disciplinas/:id", editarDisciplina);
   app.delete("/api/disciplinas/:id", excluirDisciplina);
-
+  
   //! --- TURMAS ---
   
   app.get("/api/disciplinas/:id/turmas", listarTurmasPorDisciplina);

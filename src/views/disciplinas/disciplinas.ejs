@@ -148,8 +148,7 @@
             
             <div class="form-group">
                 <label for="turmaNome">Nome da Turma *</label>
-                <input type="text" id="turmaNome" name="nome" required 
-                       placeholder="Ex: Turma A, Noturno, Matutino">
+                <input type="text" id="turmaNome" name="nome" required placeholder="Ex: Turma A, Noturno, Matutino">
             </div>
             
             <div class="form-row">
@@ -174,12 +173,46 @@
             
             <div class="form-group">
                 <label for="turmaLocal">Local</label>
-                <input type="text" id="turmaLocal" name="local" 
-                       placeholder="Ex: Sala 101, Laboratório 2">
+                <input type="text" id="turmaLocal" name="local" placeholder="Ex: Sala 101, Laboratório 2">
             </div>
             
             <div class="form-actions">
                 <button type="button" class="btn btn-secondary" id="cancelEdit">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de Edição de Disciplina -->
+<div id="disciplinaModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Editar Disciplina</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <form id="disciplinaForm">
+            <input type="hidden" id="modalDisciplinaEditId">
+            
+            <div class="form-group">
+                <label for="disciplinaNome">Nome *</label>
+                <input type="text" id="disciplinaNome" name="nome" required>
+            </div>
+            <div class="form-group">
+                <label for="disciplinaSigla">Sigla</label>
+                <input type="text" id="disciplinaSigla" name="sigla">
+            </div>
+            <div class="form-group">
+                <label for="disciplinaCodigo">Código</label>
+                <input type="text" id="disciplinaCodigo" name="codigo">
+            </div>
+            <div class="form-group">
+                <label for="disciplinaPeriodo">Período</label>
+                <input type="text" id="disciplinaPeriodo" name="periodo">
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelDisciplinaEdit">Cancelar</button>
                 <button type="submit" class="btn btn-primary">Salvar Alterações</button>
             </div>
         </form>

@@ -368,3 +368,67 @@ export async function excluirDisciplina(req: Request, res: Response) {
     res.status(500).json({ error: "Erro ao excluir disciplina." });
   }
 }
+
+// 🔥 ADICIONE ESTAS 2 FUNÇÕES NO FINAL DO SEU disciplinas.ts
+
+export async function listarTodasDisciplinas(req: Request, res: Response) {
+  const user = (req.session as any).user;
+  
+  if (!user || !user.id) {
+    return res.status(401).json({ error: "Não autorizado." });
+  }
+
+  try {
+    console.log('📥 GET /api/disciplinas - User ID:', user.id);
+    
+    const [disciplinas]: any = await pool.query(`
+      SELECT d.*, c.nome as curso_nome, i.nome as instituicao_nome
+      FROM disciplinas d
+      JOIN cursos c ON d.curso_id = c.id
+      JOIN instituicoes i ON c.instituicao_id = i.id
+      WHERE d.user_id = ?
+      ORDER BY d.nome
+    `, [user.id]);
+
+    console.log(`✅ Encontradas ${disciplinas.length} disciplinas para o usuário ${user.id}`);
+    res.json(disciplinas);
+    
+  } catch (error) {
+    console.error('❌ Erro ao listar disciplinas:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+}
+
+export async function obterDisciplinaPorId(req: Request, res: Response) {
+  const user = (req.session as any).user;
+  
+  if (!user || !user.id) {
+    return res.status(401).json({ error: "Não autorizado." });
+  }
+
+  const disciplinaId = parseInt(req.params.id);
+
+  try {
+    console.log(`📥 GET /api/disciplinas/${disciplinaId} - User ID: ${user.id}`);
+
+    const [disciplinas]: any = await pool.query(`
+      SELECT d.*, c.nome as curso_nome, i.nome as instituicao_nome
+      FROM disciplinas d
+      JOIN cursos c ON d.curso_id = c.id
+      JOIN instituicoes i ON c.instituicao_id = i.id
+      WHERE d.id = ? AND d.user_id = ?
+    `, [disciplinaId, user.id]);
+
+    if (disciplinas.length === 0) {
+      console.log(`❌ Disciplina ${disciplinaId} não encontrada para o usuário ${user.id}`);
+      return res.status(404).json({ error: 'Disciplina não encontrada' });
+    }
+
+    console.log('✅ Disciplina encontrada:', disciplinas[0]);
+    res.json(disciplinas[0]);
+    
+  } catch (error) {
+    console.error('❌ Erro ao buscar disciplina:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+}
