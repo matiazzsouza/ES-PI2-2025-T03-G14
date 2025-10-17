@@ -1,0 +1,49 @@
+<%- include('../partials/header') %>
+
+<main class="primeiro-login-container">
+  <h2>Nova Instituição</h2>
+
+  <% if (error) { %>
+    <div class="primeiro-login-error"><%= error %></div>
+  <% } %>
+
+  <form action="/instituicoes/nova" method="POST" id="instituicaoForm">
+    <div id="instituicoesContainer">
+      <!-- Grupo Instituição + Cursos -->
+      <div class="instituicao-group" data-index="0">
+        <div class="primeiro-login-section">
+          <label>Nome da Instituição:</label>
+          <input type="text" name="instituicoes[0][nome]" placeholder="Ex: PUC-Campinas" required>
+        </div>
+
+        <div class="primeiro-login-section">
+          <label>Cursos desta instituição:</label>
+          <div class="cursos-list" data-instituicao="0">
+            <div class="primeiro-login-input-group">
+              <input type="text" name="instituicoes[0][cursos][]" placeholder="Ex: Engenharia de Software" required>
+              <button type="button" class="primeiro-login-remove-btn remove-curso">✖</button>
+            </div>
+          </div>
+          <button type="button" class="primeiro-login-add-btn add-curso" data-instituicao="0">+ Adicionar curso</button>
+        </div>
+        <hr class="primeiro-login-divider">
+      </div>
+    </div>
+
+    <button type="button" class="primeiro-login-add-btn" id="addInstituicao">+ Adicionar outra instituição</button>
+
+    <div class="form-actions">
+      <button type="submit" class="primeiro-login-submit-btn">Salvar Instituição</button>
+      <a href="/home" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+
+  <div class="primeiro-login-info">
+    <p>Cada instituição deve ter pelo menos um curso</p>
+  </div>
+
+</main>
+
+<script src="/js/primeiro-login.js" defer></script>
+
+<%- include('../partials/footer') %>

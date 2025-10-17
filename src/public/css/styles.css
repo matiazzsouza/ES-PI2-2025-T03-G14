@@ -460,6 +460,14 @@ footer {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.home-container h1, h2 {
+
+  color: white;
+
+
+}
+
+
 .welcome-card {
   background: white;
   border-radius: 16px;
@@ -1674,6 +1682,7 @@ select {
   
   .header-actions h1 {
     text-align: center;
+    
   }
   
   .turma-item {

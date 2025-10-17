@@ -1,111 +1,211 @@
 <%- include('../partials/header') %>
 
-<main class="home-container">
-    <div class="welcome-card">
-        <h1>Bem-vindo, <%= user ? user.name : 'Usuário' %>!</h1>
-        <p>Gerencie suas instituições e cursos abaixo.</p>
-        
-        <div class="quick-actions">
-            <h2>📋 Ações Rápidas:</h2>
-            <br><br><br>
-            <div class="action-buttons">
-                <a href="/instituicoes/nova" class="btn btn-primary">➕ Nova Instituição</a> 
-                <a href="/auth/logout" class="btn btn-secondary">Sair</a>
+<main class="home-main">
+    <div class="home-container">
+        <!-- Header -->
+        <div class="home-header">
+            <div class="breadcrumb">
+                <a href="/home">Home</a>
+            </div>
+            <div class="header-actions">
+                <h1>Página Inicial</h1>
+                <div class="header-buttons">
+                    <a href="/instituicoes/nova" class="btn btn-primary">
+                        ➕ Nova Instituição
+                    </a>
+                    <a href="/auth/logout" class="btn btn-secondary">
+                        🚪 Sair
+                    </a>
+                </div>
             </div>
         </div>
 
-        <!-- Cards das Instituições -->
+        <!-- Mensagens -->
+        <% if (error) { %>
+            <div class="alert alert-error">
+                <span class="alert-icon">!</span>
+                <%= error %>
+            </div>
+        <% } %>
+        
+        <% if (success) { %>
+            <div class="alert alert-success">
+                <span class="alert-icon">✓</span>
+                <%= success %>
+            </div>
+        <% } %>
+
+        <!-- Cards de Informações -->
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-icon">🏫</div>
+                <div class="info-content">
+                    <span class="number"><%= instituicoes.length %></span>
+                    <span class="label">Instituições</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">📚</div>
+                <div class="info-content">
+                    <span class="number"><%= totalCursos %></span>
+                    <span class="label">Cursos</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">📖</div>
+                <div class="info-content">
+                    <span class="number"><%= totalMaterias %></span>
+                    <span class="label">Disciplinas</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">📊</div>
+                <div class="info-content">
+                    <span class="number"><%= totalNotas %></span>
+                    <span class="label">Notas</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Instituições -->
         <div class="instituicoes-section">
             <h2>Minhas Instituições</h2>
             
-            <% 
-            // Definir variáveis seguras para evitar erros
-            const instituicoesList = typeof instituicoes !== 'undefined' ? instituicoes : [];
-            const totalCursosSafe = typeof totalCursos !== 'undefined' ? totalCursos : 0;
-            const totalMateriasSafe = typeof totalMaterias !== 'undefined' ? totalMaterias : 0;
-            const totalNotasSafe = typeof totalNotas !== 'undefined' ? totalNotas : 0;
-            %>
-            
-            <% if (instituicoesList.length > 0) { %>
+            <% if (instituicoes && instituicoes.length > 0) { %>
                 <div class="instituicoes-grid">
-                    <% instituicoesList.forEach(instituicao => { %>
-                        <div class="instituicao-card">
+                    <% instituicoes.forEach(instituicao => { %>
+                        <div class="instituicao-card" data-instituicao-id="<%= instituicao.id %>">
                             <div class="instituicao-header">
                                 <h3><%= instituicao.nome %></h3>
                                 <div class="instituicao-actions">
-                                    <button class="btn-small btn-edit" title="Editar">✏️</button>
-                                    <button class="btn-small btn-delete" title="Excluir">🗑️</button>
+                                    <button class="btn-edit-instituicao" data-instituicao-id="<%= instituicao.id %>" title="Editar Instituição">
+                                        <span class="icon-edit">Editar</span>
+                                    </button>
+                                    <button class="btn-delete-instituicao" data-instituicao-id="<%= instituicao.id %>" title="Excluir Instituição">
+                                        <span class="icon-delete">Excluir</span>
+                                    </button>
                                 </div>
                             </div>
                             
-                            <div class="cursos-list">
-                                <h4>Cursos:</h4>
-                                <% 
-                                const cursosDaInstituicao = instituicao.cursos && Array.isArray(instituicao.cursos) ? instituicao.cursos : [];
-                                %>
-                                <% if (cursosDaInstituicao.length > 0) { %>
-                                    <ul>
-                                        <% cursosDaInstituicao.forEach(curso => { %>
+                            <div class="instituicao-details">
+                                <p><strong>Criada em:</strong> <%= new Date(instituicao.created_at).toLocaleDateString('pt-BR') %></p>
+                            </div>
+
+                            <!-- Cursos da Instituição -->
+                            <div class="cursos-section">
+                                <div class="cursos">
+                                    <h4>Cursos</h4>
+                                    <button class="btn-add-curso" data-instituicao-id="<%= instituicao.id %>" title="Adicionar Curso">
+                                        <span class="icon-add">Adicionar</span>
+                                    </button>
+                                </div>
+                                <% if (instituicao.cursos && instituicao.cursos.length > 0) { %>
+                                    <ul class="cursos-list">
+                                        <% instituicao.cursos.forEach(curso => { %>
                                             <li class="curso-item">
-                                                <span><%= curso.nome || 'Curso sem nome' %></span>
+                                                <div class="curso-info">
+                                                    <strong><%= curso.nome %></strong>
+                                                    <div class="curso-details">
+                                                        <span>Criado em: <%= new Date(curso.created_at).toLocaleDateString('pt-BR') %></span>
+                                                    </div>
+                                                </div>
                                                 <div class="curso-actions">
-                                                    <!-- 🔥 BOTÃO ADICIONAR DISCIPLINA - CORRIGIDO -->
-                                                    <a href="/curso/<%= curso.id %>/disciplinas/add" 
-                                                       class="btn-tiny btn-add-disciplina"
-                                                       title="Adicionar Disciplina">➕</a>
-                                                    <!-- 🔥 BOTÃO VER DISCIPLINAS - CORRIGIDO -->
-                                                    <a href="/curso/<%= curso.id %>/disciplinas" 
-                                                       class="btn-tiny btn-ver-disciplinas"
-                                                       title="Ver Disciplinas">📖</a>
+                                                    <a href="/curso/<%= curso.id %>/disciplinas" class="btn-disciplinas" title="Ver Disciplinas">
+                                                        <span class="icon-disciplinas">Disciplinas</span>
+                                                    </a>
+                                                    <button class="btn-edit-curso" data-curso-id="<%= curso.id %>" title="Editar Curso">
+                                                        <span class="icon-edit">Editar</span>
+                                                    </button>
+                                                    <button class="btn-delete-curso" data-curso-id="<%= curso.id %>" title="Excluir Curso">
+                                                        <span class="icon-delete">Excluir</span>
+                                                    </button>
                                                 </div>
                                             </li>
                                         <% }); %>
                                     </ul>
                                 <% } else { %>
-                                    <p class="no-cursos">Nenhum curso cadastrado</p>
+                                    <p class="empty-message">Nenhum curso cadastrado</p>
                                 <% } %>
-                            </div>
-                            
-                            <div class="instituicao-footer">
-                                <button class="btn-small btn-add-curso" 
-                                        data-instituicao-id="<%= instituicao.id %>">
-                                    ➕ Adicionar Curso
-                                </button>
                             </div>
                         </div>
                     <% }); %>
                 </div>
             <% } else { %>
                 <div class="empty-state">
-                    <p>Você ainda não possui instituições cadastradas.</p>
-                    <a href="/instituicoes/nova" class="btn btn-primary">➕ Cadastrar Primeira Instituição</a>
+                    <p>Nenhuma instituição cadastrada ainda.</p>
+                    <a href="/instituicoes/nova" class="btn btn-primary">
+                        ➕ Adicionar Primeira Instituição
+                    </a>
                 </div>
             <% } %>
         </div>
-
-        <!-- Resumo do Sistema -->
-        <div class="system-info">
-            <h2>📊 Resumo do Sistema</h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="number"><%= instituicoesList.length %></span>
-                    <span class="label">Instituições</span>
-                </div>
-                <div class="info-item">
-                    <span class="number"><%= totalCursosSafe %></span>
-                    <span class="label">Cursos</span>
-                </div>
-                <div class="info-item">
-                    <span class="number"><%= totalMateriasSafe %></span>
-                    <span class="label">Matérias</span>
-                </div>
-                <div class="info-item">
-                    <span class="number"><%= totalNotasSafe %></span>
-                    <span class="label">Notas</span>
-                </div>
-            </div>
-        </div>
     </div>
 </main>
+
+<!-- Modal Editar Instituição -->
+<div id="instituicaoModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Editar Instituição</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <form id="instituicaoForm">
+            <input type="hidden" id="modalInstituicaoId">
+            <div class="form-group">
+                <label for="instituicaoNome">Nome da Instituição *</label>
+                <input type="text" id="instituicaoNome" name="nome" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelEditInstituicao">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Editar Curso -->
+<div id="cursoModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Editar Curso</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <form id="cursoForm">
+            <input type="hidden" id="modalCursoId">
+            <div class="form-group">
+                <label for="cursoNome">Nome do Curso *</label>
+                <input type="text" id="cursoNome" name="nome" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelEditCurso">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Adicionar Curso -->
+<div id="addCursoModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Adicionar Curso</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <form id="addCursoForm">
+            <input type="hidden" id="modalInstituicaoIdCurso">
+            <div class="form-group">
+                <label for="novoCursoNome">Nome do Curso *</label>
+                <input type="text" id="novoCursoNome" name="nome" required 
+                       placeholder="Ex: Engenharia de Software">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelAddCurso">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar Curso</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/js/home.js"></script>
 
 <%- include('../partials/footer') %>
