@@ -1,3 +1,5 @@
+// ! ROTAS PARA AS ABAS DE DISCIPLINA
+
 import { Request, Response } from 'express';
 import { pool } from '../database/database-fixed';
 
@@ -289,6 +291,7 @@ export async function editarDisciplina(req: Request, res: Response) {
   }
 }
 
+
 export async function excluirDisciplina(req: Request, res: Response) {
   const user = (req.session as any).user;
   
@@ -297,10 +300,12 @@ export async function excluirDisciplina(req: Request, res: Response) {
   }
 
   const { id: disciplinaId } = req.params;
+  const body = req.body || {};
+  const confirmacao = body.confirmacao;
 
   try {
     const [disciplinas]: any = await pool.query(
-      "SELECT id, curso_id FROM disciplinas WHERE id = ? AND user_id = ?",
+      "SELECT id, nome, curso_id FROM disciplinas WHERE id = ? AND user_id = ?",
       [disciplinaId, user.id]
     );
 
@@ -309,28 +314,54 @@ export async function excluirDisciplina(req: Request, res: Response) {
     }
 
     const disciplina = disciplinas[0];
+    const nomeDisciplina = disciplina.nome;
 
+    // ✅ VERIFICAR SE TEM TURMAS
     const [turmas]: any = await pool.query(
-      "SELECT id FROM turmas WHERE disciplina_id = ?",
+      "SELECT COUNT(*) as total FROM turmas WHERE disciplina_id = ?",
       [disciplinaId]
     );
 
-    if (turmas.length > 0) {
+    const totalTurmas = turmas[0].total;
+
+    if (totalTurmas > 0) {
       return res.status(400).json({ 
-        error: "Não é possível excluir disciplina com turmas associadas. Exclua as turmas primeiro." 
+        success: false,
+        error: "Não é possível excluir disciplina com turmas associadas.",
+        message: `A disciplina "${nomeDisciplina}" possui ${totalTurmas} turma(s) cadastrada(s). Exclua todas as turmas primeiro.`
       });
     }
 
-    await pool.query(
-      "DELETE FROM disciplinas WHERE id = ? AND user_id = ?",
-      [disciplinaId, user.id]
-    );
+    // ✅ PRIMEIRA CHAMADA - SEM CONFIRMAÇÃO
+    if (confirmacao === undefined) {
+      return res.status(200).json({
+        requireConfirmation: true,
+        message: `Tem certeza que deseja excluir a disciplina "${nomeDisciplina}"?`,
+        disciplina: {
+          id: disciplina.id,
+          nome: nomeDisciplina,
+          curso_id: disciplina.curso_id
+        }
+      });
+    }
 
-    res.json({ 
-      success: true, 
-      message: "Disciplina excluída com sucesso!",
-      redirect: `/curso/${disciplina.curso_id}/disciplinas?success=Disciplina excluída com sucesso!`
-    });
+    // ✅ SEGUNDA CHAMADA - COM CONFIRMAÇÃO
+    if (confirmacao === true) {
+      await pool.query(
+        "DELETE FROM disciplinas WHERE id = ? AND user_id = ?",
+        [disciplinaId, user.id]
+      );
+
+      return res.json({ 
+        success: true, 
+        message: `Disciplina "${nomeDisciplina}" excluída com sucesso!`,
+        redirect: `/curso/${disciplina.curso_id}/disciplinas?success=Disciplina excluída com sucesso!`
+      });
+    } else {
+      return res.status(400).json({ 
+        error: "Confirmação inválida." 
+      });
+    }
 
   } catch (error) {
     console.error("Erro ao excluir disciplina:", error);

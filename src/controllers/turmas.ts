@@ -161,10 +161,12 @@ export async function excluirTurma(req: Request, res: Response) {
   }
 
   const { id: turmaId } = req.params;
+  const body = req.body || {};
+  const confirmacao = body.confirmacao;
 
   try {
     const [turmas]: any = await pool.query(
-      "SELECT id FROM turmas WHERE id = ? AND user_id = ?",
+      "SELECT id, nome, disciplina_id FROM turmas WHERE id = ? AND user_id = ?",
       [turmaId, user.id]
     );
 
@@ -172,12 +174,54 @@ export async function excluirTurma(req: Request, res: Response) {
       return res.status(403).json({ error: "Acesso negado." });
     }
 
-    await pool.query(
-      "DELETE FROM turmas WHERE id = ? AND user_id = ?",
-      [turmaId, user.id]
+    const turma = turmas[0];
+    const nomeTurma = turma.nome;
+
+    // ✅ VERIFICAR SE TEM ALUNOS
+    const [alunos]: any = await pool.query(
+      "SELECT COUNT(*) as total FROM alunos WHERE turma_id = ?",
+      [turmaId]
     );
 
-    res.json({ success: true, message: "Turma excluída com sucesso!" });
+    const totalAlunos = alunos[0].total;
+
+    if (totalAlunos > 0) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Não é possível excluir turma com alunos matriculados.",
+        message: `A turma "${nomeTurma}" possui ${totalAlunos} aluno(s) matriculado(s). Remova todos os alunos primeiro.`
+      });
+    }
+
+    // ✅ PRIMEIRA CHAMADA - SEM CONFIRMAÇÃO
+    if (confirmacao === undefined) {
+      return res.status(200).json({
+        requireConfirmation: true,
+        message: `Tem certeza que deseja excluir a turma "${nomeTurma}"?`,
+        turma: {
+          id: turma.id,
+          nome: nomeTurma,
+          disciplina_id: turma.disciplina_id
+        }
+      });
+    }
+
+    // ✅ SEGUNDA CHAMADA - COM CONFIRMAÇÃO
+    if (confirmacao === true) {
+      await pool.query(
+        "DELETE FROM turmas WHERE id = ? AND user_id = ?",
+        [turmaId, user.id]
+      );
+
+      return res.json({ 
+        success: true, 
+        message: `Turma "${nomeTurma}" excluída com sucesso!` 
+      });
+    } else {
+      return res.status(400).json({ 
+        error: "Confirmação inválida." 
+      });
+    }
 
   } catch (error) {
     console.error("Erro ao excluir turma:", error);

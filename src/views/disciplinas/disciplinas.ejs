@@ -72,9 +72,8 @@
                             <div class="turmas-section">
                                 <div class="turmas-header">
                                     <h4>Turmas</h4>
-                                    <!-- BOTÃO ATUALIZADO: Agora vai para tela separada -->
                                     <a href="/disciplina/<%= disciplina.id %>/turmas/add" class="btn-add-turma" title="Adicionar Turma">
-                                        <span class="icon-add">+</span>
+                                        <span class="icon-add">➕<span>
                                     </a>
                                 </div>
                                 <% if (disciplina.turmas && disciplina.turmas.length > 0) { %>
@@ -135,6 +134,57 @@
         </div>
     </div>
 </main>
+
+<!-- Modal de Edição de Turma -->
+<div id="turmaModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTurmaTitle">Editar Turma</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <form id="turmaForm">
+            <input type="hidden" id="modalTurmaId">
+            <input type="hidden" id="modalDisciplinaId">
+            
+            <div class="form-group">
+                <label for="turmaNome">Nome da Turma *</label>
+                <input type="text" id="turmaNome" name="nome" required 
+                       placeholder="Ex: Turma A, Noturno, Matutino">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="turmaDiaSemana">Dia da Semana</label>
+                    <select id="turmaDiaSemana" name="dia_semana">
+                        <option value="">Selecione o dia</option>
+                        <option value="Segunda">Segunda-feira</option>
+                        <option value="Terça">Terça-feira</option>
+                        <option value="Quarta">Quarta-feira</option>
+                        <option value="Quinta">Quinta-feira</option>
+                        <option value="Sexta">Sexta-feira</option>
+                        <option value="Sábado">Sábado</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="turmaHorario">Horário</label>
+                    <input type="time" id="turmaHorario" name="horario">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="turmaLocal">Local</label>
+                <input type="text" id="turmaLocal" name="local" 
+                       placeholder="Ex: Sala 101, Laboratório 2">
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelEdit">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script src="/js/disciplinas.js"></script>
 

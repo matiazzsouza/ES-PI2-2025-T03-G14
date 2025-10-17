@@ -33,6 +33,7 @@ footer {
   position: relative;
 }
 
+
 /* ===================== COMPONENTES PADRONIZADOS ===================== */
 .btn {
   padding: 1rem 2rem;
@@ -1106,6 +1107,7 @@ footer {
   height: 2rem;
   font-size: 1.1rem;
   font-weight: bold;
+  text-decoration: none;
 }
 
 .btn-add-turma:hover {
@@ -1238,10 +1240,7 @@ footer {
   gap: 0.5rem;
 }
 
-.form-group label::before {
-  content: '🎯';
-  font-size: 0.9em;
-}
+
 
 .form-group.required label::after {
   content: '*';
@@ -2008,4 +2007,124 @@ select {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+
+
+
+/*!  Modal para confirmação de exclusão */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.modal-header {
+    background: #f8f9fa;
+    padding: 20px;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.close-modal {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    color: #000;
+}
+
+.modal-content form {
+    padding: 20px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="time"],
+select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+input[type="text"]:focus,
+input[type="time"]:focus,
+select:focus {
+    outline: none;
+    border-color: #007bff;
 }

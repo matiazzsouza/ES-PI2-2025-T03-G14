@@ -1,9 +1,7 @@
+// ! 🔹 Serviço responsável por salvar instituições e cursos no banco de dados. Tudo é feito dentro de uma transação para garantir integridade.
+
 import { pool } from "../database/database-fixed";
 
-/**
- * 🔹 Serviço responsável por salvar instituições e cursos no banco de dados.
- * Tudo é feito dentro de uma transação para garantir integridade.
- */
 
 export async function salvarInstituicoesECursos(
   userId: number,

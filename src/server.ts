@@ -42,7 +42,6 @@ import {
   excluirDisciplina
 } from './controllers/disciplinas';
 
-// Importar APIs para AJAX (suas rotas existentes)
 import {
   listarTurmasPorDisciplina,
   criarTurma,
@@ -51,7 +50,6 @@ import {
   excluirTurma
 } from './controllers/turmas';
 
-// Importar rotas de páginas (novas rotas para telas EJS)
 import {
   exibirAddTurmas,
   criarMultiplasTurmas
@@ -120,12 +118,10 @@ async function startServer() {
           return res.render("auth/login", { title: "Login", error: "Erro no login!" });
         }
 
-        // ✅ Se É a primeira vez (primeira_vez = true)
         if (user.primeira_vez) {
           return res.redirect("/primeiro-login");
         }
 
-        // ✅ Se JÁ entrou antes → vai para home
         return res.redirect("/home");
       });
 
@@ -139,11 +135,14 @@ async function startServer() {
   app.get("/primeiro-login", exibirPaginaPrimeiroLogin);
   app.post("/primeiro-login", processarPrimeiroLogin);
 
+  
   //! --- LOGOUT --- 
   app.get("/auth/logout", (req, res) => {
     clearUserSession(req.session);
     res.redirect("/auth/login");
   });
+
+
 
   //! --- REGISTRO ---
 
@@ -461,7 +460,6 @@ async function startServer() {
 
   //! --- TURMAS ---
   
-  // API Turmas (AJAX) - Suas rotas existentes
   app.get("/api/disciplinas/:id/turmas", listarTurmasPorDisciplina);
   app.post("/api/disciplinas/:id/turmas", criarTurma);
   app.get("/api/turmas/:id", obterTurma);
@@ -472,6 +470,8 @@ async function startServer() {
   app.get("/disciplina/:id/turmas/add", exibirAddTurmas);
   app.post("/disciplina/:id/turmas/multiple", criarMultiplasTurmas);
 
+
+  
   //! --- PÁGINA WEB ---
   app.get("/web", (req, res) => {
     res.render("auth/login", { title: "Página Web", error: null });
