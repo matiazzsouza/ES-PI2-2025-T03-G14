@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>NotaDez - Grade de Alunos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background: #101827;
+      color: #cbd5e1;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .headerMain {
+      margin-top: 40px;
+      margin-bottom: 22px;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    .headerMain h1 {
+      font-size: 2.4em;
+      font-weight: 700;
+      color: #22d3ee;
+      margin: 0;
+      letter-spacing: 2px;
+      background: linear-gradient(to right, #0ea5e9 0%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 22px #0f172a44;
+    }
+    .topBar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto 30px auto;
+      padding: 0 50px;
+      margin-top: 108px;
+    }
+    .roomName {
+      font-size: 1.12em;
+      font-weight: 500;
+      color: #7dd3fc;
+      background: #181c22;
+      padding: 6px 18px 7px 18px;
+      border-radius: 13px;
+      box-shadow: 0 2px 11px #22d3ee19;
+      letter-spacing: 0.5px;
+      border: 1px solid #344155;
+    }
+    .actionButtons {
+      display: flex;
+      gap: 26px;
+    }
+    .iconButton {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 17px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(to right, #164e63 40%, #0ea5e9 100%);
+      color: #fff;
+      box-shadow: 0 2px 20px #22d3ee40;
+      cursor: pointer;
+      font-weight: 500;
+      transition: transform .11s, box-shadow .19s, background .19s;
+      outline: none;
+    }
+    .iconButton svg {
+      width: 20px;
+      height: 20px;
+      margin-right: 7px;
+      fill: currentColor;
+      vertical-align: middle;
+    }
+    .iconButton:hover, .iconButton:focus {
+      box-shadow: 0 2px 32px #06b6d4a0;
+      background: linear-gradient(to right, #0ea5e9 10%, #164e63 95%);
+      outline: 1px solid #38bdf8;
+    }
+    .container {
+      max-width: 900px;
+      margin: 26px auto 0 auto;
+      background: #181c22;
+      border-radius: 16px;
+      padding: 32px 18px 22px 18px;
+      box-shadow: 0 8px 28px #111e2f50;
+      border: 1px solid #293445;
+    }
+    .controls {
+      display: flex;
+      gap: 13px;
+      justify-content: flex-start;
+      margin-bottom: 18px;
+      margin-top: 10px;
+    }
+    .plainButton {
+      background: #1e293b;
+      color: #7dd3fc;
+      border: 1px solid #334155;
+      border-radius: 7px;
+      padding: 9px 22px;
+      cursor: pointer;
+      font-weight: 500;
+      box-shadow: 0 2px 8px #0ea5e91a;
+      transition: background .16s, color .16s, border .16s;
+      font-size: 1em;
+    }
+    .plainButton:hover, .plainButton:focus {
+      background: #0ea5e9;
+      color: #fff;
+      border: 1px solid #38bdf8;
+      outline: none;
+    }
+    .emptyState {
+      text-align: center;
+      margin: 24px 0;
+      background: #111c25d4;
+      color: #38bdf8;
+      padding: 2.2rem 0;
+      border-radius: 14px;
+      font-size: 1.08em;
+      letter-spacing: 1px;
+      border: 1px solid #344155;
+    }
+    .alert {
+      position: relative;
+      margin: 20px 0 16px 0;
+      padding: 15px 24px;
+      border-radius: 8px;
+      font-size: 1.08em;
+      font-weight: 500;
+      letter-spacing: 1px;
+      box-shadow: 0 3px 13px #0ea5e940;
+      border: 1.5px solid #38bdf8;
+      background: #0ea5e95b;
+      color: #22d3ee;
+      text-align: center;
+      z-index: 2;
+      animation: fadeIn 0.4s;
+    }
+    .alert.error {
+      background: #251c251e;
+      color: #fb7185;
+      border-color: #fb7185;
+    }
+    .alert.success {
+      background: #052841cf;
+      color: #22d3ee;
+      border-color: #38bdf8;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-15px);}
+      to { opacity: 1; transform: none;}
+    }
+    .modal {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #111c25d8; z-index: 989;
+      display: none; justify-content: center; align-items: center;
+    }
+    .modal.active { display: flex; }
+    .modal .modal-content {
+      background: #181c22; border-radius: 14px; box-shadow: 0 2px 12px #0ea5e983;
+      padding: 30px 38px; min-width: 340px; display: flex; flex-direction: column; gap: 27px; align-items:center;
+    }
+    .modal .modal-content h2 {
+      margin:0;color:#06b6d4;font-size:1.45em;letter-spacing:1px;background:linear-gradient(to right,#0ea5e9,#7dd3fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 14px #0fa9da70;
+    }
+    @media (max-width: 700px) {
+      .container { padding: 7px; }
+      .topBar, .controls { flex-direction: column; gap: 11px; align-items:flex-start }
+      .headerMain { margin-top: 18px; }
+      .roomName { margin-bottom: 9px;}
+      .modal .modal-content { min-width: 90vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="headerMain"><h1>NotaDez</h1></div>
+  <div class="topBar">
+    <div class="roomName"><%= turma?.nome || 'Turma não encontrada' %></div>
+    <div class="actionButtons">
+      <form action="/turma/<%= turma?.id %>/alunos/importarAlunosCSV" method="post" enctype="multipart/form-data" style="display:inline-block;">
+        <label for="csvFile" class="iconButton" style="cursor:pointer;">
+          <svg viewBox="0 0 24 24"><path d="M12 18V6m0 0l-6 6m6-6l6 6"></path></svg>
+          Importar CSV
+          <input type="file" id="csvFile" name="csvFile" accept=".csv" style="display:none" onchange="this.form.submit()">
+        </label>
+      </form>
+      <form action="/turma/<%= turma?.id %>/exportar" method="get" style="display:inline-block;">
+        <button class="iconButton" type="submit">
+          <svg viewBox="0 0 24 24"><path d="M12 6v12m0 0l-6-6m6 6l6-6"></path></svg>
+          Exportar
+        </button>
+      </form>
+    </div>
+  </div>
+  <div class="container">
+    <div class="controls">
+      <button class="plainButton" type="button" onclick="abrirModalAluno()">Adicionar Aluno</button>
+      <button class="plainButton" type="button" onclick="abrirModalComponente()">Adicionar Componente</button>
+    </div>
+    <% if (success) { %>
+      <div class="alert success"><%= success %></div>
+    <% } %>
+    <% if (error) { %>
+      <div class="alert error"><%= error %></div>
+    <% } %>
+    <% if (alunos.length === 0 || componentes.length === 0) { %>
+      <div class="emptyState">
+        Adicione alunos e componentes para visualizar a tabela.
+      </div>
+    <% } else { %>
+      <!-- Tabela aparecerá aqui quando houver dados -->
+    <% } %>
+  </div>
+
+  <!-- MODAL: Adicionar aluno -->
+  <div id="modalAluno" class="modal">
+    <div class="modal-content">
+      <form action="/turma/<%= turma?.id %>/alunos" method="post" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:25px;" onsubmit="fecharModalAluno()">
+        <h2>Adicionar novo aluno</h2>
+        <div style="display:flex;gap:18px;width:100%;justify-content:center;">
+          <div style="display:flex;flex-direction:column;align-items:flex-start;">
+            <label style="color:#7dd3fc;font-weight:500;margin-bottom:7px;">RA</label>
+            <input type="text" name="RA" required style="padding:8px 16px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;font-size:1.06em;width:180px;">
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-start;">
+            <label style="color:#7dd3fc;font-weight:500;margin-bottom:7px;">Nome</label>
+            <input type="text" name="nome" required style="padding:8px 16px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;font-size:1.06em;width:220px;">
+          </div>
+        </div>
+        <div style="display:flex;gap:15px;margin-top:7px;justify-content:center;">
+          <button type="submit" class="plainButton" style="min-width:90px;">Salvar</button>
+          <button type="button" class="plainButton" onclick="fecharModalAluno()" style="background:#384254;color:#7dd3fc;min-width:90px;">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Adicionar componentes -->
+  <div id="modalComponente" class="modal">
+    <div class="modal-content" style="min-width:400px;">
+      <form id="formComponentes" action="/turma/<%= turma?.id %>/componentes/adicionar" method="post" style="display:flex;flex-direction:column;gap:18px;">
+        <h2 style="margin:0;background:linear-gradient(to right,#0ea5e9,#7dd3fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Adicionar Componentes</h2>
+        <label>
+          Tipo de Média:
+          <select name="tipo_media" id="tipo_media" onchange="alteraTipoMedia()" style="margin-left:7px;padding:5px 12px;border-radius:7px;">
+            <option value="aritmetica">Aritmética</option>
+            <option value="ponderada">Ponderada</option>
+          </select>
+        </label>
+        <div id="componentesInputs">
+          <div class="componenteLinha" style="display:flex;gap:12px;align-items:center;margin-bottom:7px;">
+            <input type="text" required name="componentes[0][nome]" placeholder="EX: P1, T1, A1" style="padding:7px;width:170px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;">
+            <input type="number" required name="componentes[0][peso]" placeholder="Peso" step="0.01" min="0" max="1" style="padding:7px;width:70px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;display:none;">
+            <button type="button" onclick="removerLinhaComponente(this)" style="background:#384254;color:#fb7185;border:none;padding:7px 13px;border-radius:7px;font-weight:700;cursor:pointer;">X</button>
+          </div>
+        </div>
+        <button type="button" class="plainButton" onclick="adicionarLinhaComponente()">+ Adicionar Mais</button>
+        <div style="display:flex;gap:12px;justify-content:center;">
+          <button type="submit" class="plainButton">Salvar</button>
+          <button type="button" class="plainButton" style="background:#384254;color:#7dd3fc;" onclick="fecharModalComponente()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    function abrirModalAluno() {
+      document.getElementById('modalAluno').classList.add('active');
+    }
+    function fecharModalAluno() {
+      document.getElementById('modalAluno').classList.remove('active');
+    }
+    function abrirModalComponente() {
+      document.getElementById('modalComponente').classList.add('active');
+      alteraTipoMedia();
+    }
+    function fecharModalComponente() {
+      document.getElementById('modalComponente').classList.remove('active');
+    }
+    function adicionarLinhaComponente() {
+      const container = document.getElementById('componentesInputs');
+      let idx = container.children.length;
+      const linha = document.createElement('div');
+      linha.className = "componenteLinha";
+      linha.style.display = "flex";
+      linha.style.gap = "12px";
+      linha.style.alignItems = "center";
+      linha.style.marginBottom = "7px";
+      linha.innerHTML =
+          `<input type="text" required name="componentes[${idx}][nome]" placeholder="Nome do componente" style="padding:7px;width:170px;border-radius:7px;border:1.5px solid #38bdf8;background:#1e293b;color:#cbd5e1;">
+           <input type="number" required name="componentes[${idx}][peso]" placeholder="Peso" step="0.01" min="0" max="1" style="padding:7px;width:70px;border-radius:7px;border:1.5px solid #38bdf8;background:#1e293b;color:#cbd5e1;display:none;">
+           <button type="button" onclick="removerLinhaComponente(this)" style="background:#384254;color:#fb7185;border:none;padding:7px 13px;border-radius:7px;font-weight:700;cursor:pointer;">X</button>`;
+      container.appendChild(linha);
+      alteraTipoMedia();
+    }
+    function removerLinhaComponente(botao) {
+      botao.parentNode.remove();
+      alteraTipoMedia();
+    }
+    function alteraTipoMedia() {
+      const tipo = document.getElementById('tipo_media').value;
+      document.querySelectorAll('#componentesInputs .componenteLinha').forEach(linha => {
+        const inpPeso = linha.querySelector('input[type="number"]');
+        if(tipo === "ponderada") {
+          inpPeso.style.display = "";
+          inpPeso.required = true;
+        } else {
+          inpPeso.style.display = "none";
+          inpPeso.required = false;
+        }
+      });
+    }
+  </script>
+</body>
+</html>

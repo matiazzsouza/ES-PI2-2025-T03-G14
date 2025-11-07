@@ -1,226 +1,226 @@
-<%- include('../partials/header') %>
- <br>
-<main class="home-main">
-    <div class="home-container">
-        <!-- Header -->
-        <div class="home-header">
-            <div class="breadcrumb">
-                <a href="/home">Home</a>
-            </div>
-            <div class="header-actions">
-                <h1>Página Inicial</h1>
-                <div class="header-buttons">
-                    <a href="/instituicoes/nova" class="btn btn-primary">
-                        ➕ Nova Instituição
-                    </a>
-                    <a href="/auth/logout" class="btn btn-secondary">
-                        🚪 Sair
-                    </a>
+    <%- include('../partials/header') %>
+    <br>
+    <main class="home-main">
+        <div class="home-container">
+            <!-- Header -->
+            <div class="home-header">
+                <div class="breadcrumb">
+                    <a href="/home">Home</a>
+                </div>
+                <div class="header-actions">
+                    <h1>Página Inicial</h1>
+                    <div class="header-buttons">
+                        <a href="/instituicoes/nova" class="btn btn-primary">
+                            ➕ Nova Instituição
+                        </a>
+                        <a href="/auth/logout" class="btn btn-secondary">
+                            🚪 Sair
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Mensagens -->
-        <% if (error) { %>
-            <div class="alert alert-error">
-                <span class="alert-icon">!</span>
-                <%= error %>
-            </div>
-        <% } %>
-        
-        <% if (success) { %>
-            <div class="alert alert-success">
-                <span class="alert-icon">✓</span>
-                <%= success %>
-            </div>
-        <% } %>
-
-        <!-- Cards de Informações -->
-        <div class="info-grid">
-            <div class="info-item">
-                <div class="info-icon">🏫</div>
-                <div class="info-content">
-                    <span class="number"><%= instituicoes.length %></span>
-                    <span class="label">Instituições</span>
-                </div>
-            </div>
-            <div class="info-item">
-                <div class="info-icon">📚</div>
-                <div class="info-content">
-                    <span class="number"><%= totalCursos %></span>
-                    <span class="label">Cursos</span>
-                </div>
-            </div>
-            <div class="info-item">
-                <div class="info-icon">📖</div>
-                <div class="info-content">
-                    <span class="number"><%= totalMaterias %></span>
-                    <span class="label">Disciplinas</span>
-                </div>
-            </div>
-            <div class="info-item">
-                <div class="info-icon">📊</div>
-                <div class="info-content">
-                    <span class="number"><%= totalNotas %></span>
-                    <span class="label">Notas</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Lista de Instituições -->
-        <div class="instituicoes-section">
-            <h2>Minhas Instituições</h2>
-            
-            <% if (instituicoes && instituicoes.length > 0) { %>
-                <div class="instituicoes-grid">
-                    <% instituicoes.forEach(instituicao => { %>
-                        <div class="instituicao-card" data-instituicao-id="<%= instituicao.id %>">
-                            <div class="instituicao-header">
-                                <h3><%= instituicao.nome %></h3>
-                                <div class="instituicao-actions">
-                                    <button class="btn-edit btn-edit-instituicao" 
-                                            data-instituicao-id="<%= instituicao.id %>"
-                                            title="Editar Instituição">
-                                        <span class="icon-edit">✏️</span>
-                                    </button>
-                                    <button class="btn-delete btn-delete-instituicao" 
-                                            data-instituicao-id="<%= instituicao.id %>"
-                                            title="Excluir Instituição">
-                                        <span class="icon-delete">🗑️</span>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="instituicao-details">
-                                <p><strong>Criada em:</strong> <%= new Date(instituicao.created_at).toLocaleDateString('pt-BR') %></p>
-                            </div>
-
-                            <!-- Cursos da Instituição NA VERTICAL -->
-                            <div class="cursos-section">
-                                <div class="cursos-header">
-                                    <h4>Cursos (<%= instituicao.cursos ? instituicao.cursos.length : 0 %>)</h4>
-                                    <button class="btn-add-curso" 
-                                            data-instituicao-id="<%= instituicao.id %>"
-                                            title="Adicionar Curso">
-                                        <span class="icon-add">➕ Adicionar Curso</span>
-                                    </button>
-                                </div>
-                                
-                                <% if (instituicao.cursos && instituicao.cursos.length > 0) { %>
-                                    <div class="cursos-container">
-                                        <div class="cursos-list">
-                                            <% instituicao.cursos.forEach(curso => { %>
-                                                <div class="curso-item">
-                                                    <div class="curso-info">
-                                                        <strong><%= curso.nome %></strong>
-                                                        <div class="curso-details">
-                                                            <span>Criado em: <%= new Date(curso.created_at).toLocaleDateString('pt-BR') %></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="curso-actions">
-                                                        <a href="/curso/<%= curso.id %>/disciplinas" 
-                                                           class="btn-disciplinas" 
-                                                           title="Ver Disciplinas">
-                                                            📚 Disciplinas
-                                                        </a>
-                                                        <button class="btn-edit btn-edit-curso" 
-                                                                data-curso-id="<%= curso.id %>"
-                                                                title="Editar Curso">
-                                                            <span class="icon-edit">✏️</span>
-                                                        </button>
-                                                        <button class="btn-delete btn-delete-curso" 
-                                                                data-curso-id="<%= curso.id %>"
-                                                                title="Excluir Curso">
-                                                            <span class="icon-delete">🗑️</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            <% }); %>
-                                        </div>
-                                    </div>
-                                <% } else { %>
-                                    <p class="empty-message">Nenhum curso cadastrado</p>
-                                <% } %>
-                            </div>
-                        </div>
-                    <% }); %>
-                </div>
-            <% } else { %>
-                <div class="empty-state">
-                    <p>Nenhuma instituição cadastrada ainda.</p>
-                    <a href="/instituicoes/nova" class="btn btn-primary">
-                        ➕ Adicionar Primeira Instituição
-                    </a>
+            <!-- Mensagens -->
+            <% if (error) { %>
+                <div class="alert alert-error">
+                    <span class="alert-icon">!</span>
+                    <%= error %>
                 </div>
             <% } %>
+            
+            <% if (success) { %>
+                <div class="alert alert-success">
+                    <span class="alert-icon">✓</span>
+                    <%= success %>
+                </div>
+            <% } %>
+
+            <!-- Cards de Informações -->
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-icon">🏫</div>
+                    <div class="info-content">
+                        <span class="number"><%= instituicoes.length %></span>
+                        <span class="label">Instituições</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">📚</div>
+                    <div class="info-content">
+                        <span class="number"><%= totalCursos %></span>
+                        <span class="label">Cursos</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">📖</div>
+                    <div class="info-content">
+                        <span class="number"><%= totalMaterias %></span>
+                        <span class="label">Disciplinas</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">📊</div>
+                    <div class="info-content">
+                        <span class="number"><%= totalNotas %></span>
+                        <span class="label">Notas</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Instituições -->
+            <div class="instituicoes-section">
+                <h2>Minhas Instituições</h2>
+                
+                <% if (instituicoes && instituicoes.length > 0) { %>
+                    <div class="instituicoes-grid">
+                        <% instituicoes.forEach(instituicao => { %>
+                            <div class="instituicao-card" data-instituicao-id="<%= instituicao.id %>">
+                                <div class="instituicao-header">
+                                    <h3><%= instituicao.nome %></h3>
+                                    <div class="instituicao-actions">
+                                        <button class="btn-edit btn-edit-instituicao" 
+                                                data-instituicao-id="<%= instituicao.id %>"
+                                                title="Editar Instituição">
+                                            <span class="icon-edit">✏️</span>
+                                        </button>
+                                        <button class="btn-delete btn-delete-instituicao" 
+                                                data-instituicao-id="<%= instituicao.id %>"
+                                                title="Excluir Instituição">
+                                            <span class="icon-delete">🗑️</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="instituicao-details">
+                                    <p><strong>Criada em:</strong> <%= new Date(instituicao.created_at).toLocaleDateString('pt-BR') %></p>
+                                </div>
+
+                                <!-- Cursos da Instituição NA VERTICAL -->
+                                <div class="cursos-section">
+                                    <div class="cursos-header">
+                                        <h4>Cursos (<%= instituicao.cursos ? instituicao.cursos.length : 0 %>)</h4>
+                                        <button class="btn-add-curso" 
+                                                data-instituicao-id="<%= instituicao.id %>"
+                                                title="Adicionar Curso">
+                                            <span class="icon-add">➕ Adicionar Curso</span>
+                                        </button>
+                                    </div>
+                                    
+                                    <% if (instituicao.cursos && instituicao.cursos.length > 0) { %>
+                                        <div class="cursos-container">
+                                            <div class="cursos-list">
+                                                <% instituicao.cursos.forEach(curso => { %>
+                                                    <div class="curso-item">
+                                                        <div class="curso-info">
+                                                            <strong><%= curso.nome %></strong>
+                                                            <div class="curso-details">
+                                                                <span>Criado em: <%= new Date(curso.created_at).toLocaleDateString('pt-BR') %></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="curso-actions">
+                                                            <a href="/curso/<%= curso.id %>/disciplinas" 
+                                                            class="btn-disciplinas" 
+                                                            title="Ver Disciplinas">
+                                                                📚 Disciplinas
+                                                            </a>
+                                                            <button class="btn-edit btn-edit-curso" 
+                                                                    data-curso-id="<%= curso.id %>"
+                                                                    title="Editar Curso">
+                                                                <span class="icon-edit">✏️</span>
+                                                            </button>
+                                                            <button class="btn-delete btn-delete-curso" 
+                                                                    data-curso-id="<%= curso.id %>"
+                                                                    title="Excluir Curso">
+                                                                <span class="icon-delete">🗑️</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                <% }); %>
+                                            </div>
+                                        </div>
+                                    <% } else { %>
+                                        <p class="empty-message">Nenhum curso cadastrado</p>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <p>Nenhuma instituição cadastrada ainda.</p>
+                        <a href="/instituicoes/nova" class="btn btn-primary">
+                            ➕ Adicionar Primeira Instituição
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Editar Instituição -->
+    <div id="instituicaoModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Instituição</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="instituicaoForm">
+                <input type="hidden" id="modalInstituicaoId">
+                <div class="form-group">
+                    <label for="instituicaoNome">Nome da Instituição *</label>
+                    <input type="text" id="instituicaoNome" name="nome" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelEditInstituicao">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
         </div>
     </div>
-</main>
 
-<!-- Modal Editar Instituição -->
-<div id="instituicaoModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Editar Instituição</h2>
-            <span class="close-modal">&times;</span>
+    <!-- Modal Editar Curso -->
+    <div id="cursoModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Curso</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="cursoForm">
+                <input type="hidden" id="modalCursoId">
+                <div class="form-group">
+                    <label for="cursoNome">Nome do Curso *</label>
+                    <input type="text" id="cursoNome" name="nome" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelEditCurso">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
         </div>
-        <form id="instituicaoForm">
-            <input type="hidden" id="modalInstituicaoId">
-            <div class="form-group">
-                <label for="instituicaoNome">Nome da Instituição *</label>
-                <input type="text" id="instituicaoNome" name="nome" required>
-            </div>
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" id="cancelEditInstituicao">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Salvar</button>
-            </div>
-        </form>
     </div>
-</div>
 
-<!-- Modal Editar Curso -->
-<div id="cursoModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Editar Curso</h2>
-            <span class="close-modal">&times;</span>
+    <!-- Modal Adicionar Curso -->
+    <div id="addCursoModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Curso</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="addCursoForm">
+                <input type="hidden" id="modalInstituicaoIdCurso">
+                <div class="form-group">
+                    <label for="novoCursoNome">Nome do Curso *</label>
+                    <input type="text" id="novoCursoNome" name="nome" required 
+                        placeholder="Ex: Engenharia de Software">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelAddCurso">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Curso</button>
+                </div>
+            </form>
         </div>
-        <form id="cursoForm">
-            <input type="hidden" id="modalCursoId">
-            <div class="form-group">
-                <label for="cursoNome">Nome do Curso *</label>
-                <input type="text" id="cursoNome" name="nome" required>
-            </div>
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" id="cancelEditCurso">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Salvar</button>
-            </div>
-        </form>
     </div>
-</div>
 
-<!-- Modal Adicionar Curso -->
-<div id="addCursoModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Adicionar Curso</h2>
-            <span class="close-modal">&times;</span>
-        </div>
-        <form id="addCursoForm">
-            <input type="hidden" id="modalInstituicaoIdCurso">
-            <div class="form-group">
-                <label for="novoCursoNome">Nome do Curso *</label>
-                <input type="text" id="novoCursoNome" name="nome" required 
-                       placeholder="Ex: Engenharia de Software">
-            </div>
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" id="cancelAddCurso">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Salvar Curso</button>
-            </div>
-        </form>
-    </div>
-</div>
+    <script src="/js/home.js"></script>
 
-<script src="/js/home.js"></script>
-
-<%- include('../partials/footer') %>
+    <%- include('../partials/footer') %>

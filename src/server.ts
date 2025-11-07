@@ -67,6 +67,21 @@ import {
   criarMultiplasTurmas
 } from './controllers/turmas-routes';
 
+
+import { 
+  exibirPaginaAlunos,
+  AdicionarAluno
+} from './controllers/alunos'; 
+
+
+import { 
+  adicionarComponentes 
+
+} from './controllers/componentes'; 
+
+
+
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -198,9 +213,6 @@ async function startServer() {
         });
       }
 
-      // 🔥 ENVIAR EMAIL DE BOAS-VINDAS
-      await sendWelcomeEmail(email, name);
-
       res.redirect("/auth/login?message=Cadastro realizado com sucesso!");
 
     } catch (err: any) {
@@ -246,7 +258,6 @@ async function startServer() {
         });
       }
 
-      // 🔥 GERAR E ENVIAR TOKEN DE RECUPERAÇÃO
       const resetToken = generateVerificationToken();
       const tokenSaved = await setResetToken(email, resetToken);
       
@@ -386,7 +397,7 @@ async function startServer() {
   }
 
   try {
-    // 🔥 BUSCAR INSTITUIÇÕES COM SEUS CURSOS
+
     const [instituicoesComCursos]: any = await pool.query(
       `SELECT 
         i.id as instituicao_id,
@@ -429,7 +440,6 @@ async function startServer() {
 
     const instituicoes = Array.from(instituicoesMap.values());
 
-    // 🔥 CALCULAR TOTAL DE CURSOS
     const totalCursos = instituicoes.reduce((total, instituicao) => {
       return total + (instituicao.cursos ? instituicao.cursos.length : 0);
     }, 0);
@@ -437,7 +447,6 @@ async function startServer() {
     console.log("🔍 Instituições processadas:", instituicoes);
     console.log("🔍 Total de cursos:", totalCursos);
 
-    // ✅ CORREÇÃO: Adicionar error e success como null
     res.render("home/home", { 
       title: "Página Inicial",
       user: user,
@@ -498,6 +507,13 @@ app.post("/api/instituicoes/:id/cursos", criarCurso);
   // Páginas Turmas (EJS) - Novas rotas para telas
   app.get("/disciplina/:id/turmas/add", exibirAddTurmas);
   app.post("/disciplina/:id/turmas/multiple", criarMultiplasTurmas);
+
+
+//! --- ALUNOS ---
+
+app.get("/turma/:id/alunos", exibirPaginaAlunos);
+app.post("/turma/:id/alunos", AdicionarAluno);
+app.post("/turma/:id/componentes/adicionar", adicionarComponentes);
 
 
   

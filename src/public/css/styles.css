@@ -190,7 +190,7 @@ footer {
   100% { transform: translateY(-100px) translateX(100px); }
 }
 
-/* ===================== TELA DE LOGIN ===================== */
+/*!  ===================== TELA DE LOGIN ===================== */
 .login-container {
   background-color: #001f3f;
   display: flex;
@@ -449,7 +449,6 @@ footer {
   text-decoration: underline;
   color: #5a67d8;
 }
-
 /*! ===================== TELA HOME ===================== */
 .home-container {
   padding: 2rem;
@@ -518,27 +517,22 @@ footer {
   padding-bottom: 0.5rem;
 }
 
-/* INSTITUIÇÕES EM GRID HORIZONTAL */
+/* INSTITUIÇÕES EM VERTICAL (UMA ABAIXO DA OUTRA) */
 .instituicoes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 1.5rem;
-  justify-items: stretch; 
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .instituicao-card {
   background: white;
   border-radius: 16px;
-  padding: 1.5rem; /* Mantenha o padding original */
+  padding: 1.5rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border-left: 4px solid #667eea;
   transition: all 0.3s ease;
   border: 1px solid #e1e5e9;
-  display: flex;
-  flex-direction: column;
-
 }
-
 
 .instituicao-card:hover {
   transform: translateY(-4px);
@@ -596,17 +590,16 @@ footer {
   background-color: #f8d7da !important;
 }
 
-/* CURSOS NA VERTICAL DENTRO DO CARD */
+/* CURSOS EM HORIZONTAL DENTRO DO CARD */
 .cursos-section {
   margin-top: 15px;
-  flex: 1;
 }
 
 .cursos-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 15px;
 }
 
 .cursos-header h4 {
@@ -617,45 +610,46 @@ footer {
 }
 
 .cursos-container {
-  max-height: 200px;
-  overflow-y: auto;
-  padding-right: 5px;
-  margin-bottom: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
 }
 
 .cursos-list {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-direction: row;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  min-width: min-content;
 }
-
 
 .curso-item {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
   border-radius: 8px;
-  padding: 12px;
+  padding: 1rem;
   transition: all 0.2s ease;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  min-width: 200px;
+  flex-shrink: 0;
 }
 
 .curso-item:hover {
   background: #e9ecef;
   border-color: #a5b4fc;
-  transform: translateX(2px);
+  transform: translateY(-2px);
 }
 
 .curso-info {
   flex: 1;
+  margin-bottom: 10px;
 }
 
 .curso-info strong {
   color: #2c3e50;
   font-size: 1em;
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .curso-details {
@@ -666,7 +660,8 @@ footer {
 .curso-actions {
   display: flex;
   gap: 6px;
-  align-items: center;
+  justify-content: flex-end;
+  margin-top: auto;
 }
 
 /* Botões */
@@ -675,7 +670,7 @@ footer {
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   cursor: pointer;
   font-size: 0.8em;
   transition: all 0.2s ease;
@@ -714,13 +709,15 @@ footer {
 .btn-disciplinas {
   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
   color: white;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 6px;
   text-decoration: none;
   font-size: 0.75em;
   font-weight: 600;
   transition: all 0.2s ease;
   white-space: nowrap;
+  display: inline-block;
+  text-align: center;
 }
 
 .btn-disciplinas:hover {
@@ -730,19 +727,19 @@ footer {
   color: white;
 }
 
-/* Scrollbar personalizada para vertical */
+/* Scrollbar personalizada para horizontal */
 .cursos-container::-webkit-scrollbar {
-  width: 6px;
+  height: 8px;
 }
 
 .cursos-container::-webkit-scrollbar-track {
   background: #f1f1f1;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .cursos-container::-webkit-scrollbar-thumb {
   background: #c1c1c1;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .cursos-container::-webkit-scrollbar-thumb:hover {
@@ -898,10 +895,6 @@ footer {
     padding: 1rem;
   }
   
-  .instituicoes-grid {
-    grid-template-columns: 1fr;
-  }
-  
   .instituicao-header {
     flex-direction: column;
     gap: 10px;
@@ -912,13 +905,12 @@ footer {
   }
   
   .curso-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    min-width: 180px;
   }
   
   .curso-actions {
-    align-self: flex-end;
+    flex-wrap: wrap;
+    justify-content: center;
   }
   
   .header-actions {
@@ -947,18 +939,6 @@ footer {
   
   .btn-add-curso {
     align-self: flex-start;
-  }
-}
-
-@media (min-width: 1200px) {
-  .instituicoes-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1500px) {
-  .instituicoes-grid {
-    grid-template-columns: repeat(4, 1fr);
   }
 }
 

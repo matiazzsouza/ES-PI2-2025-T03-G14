@@ -258,7 +258,6 @@ export async function criarInstituicao(req: Request, res: Response) {
   }
 }
 
-// ✅ EXIBIR PÁGINA NOVA INSTITUIÇÃO
 export async function exibirNovaInstituicao(req: Request, res: Response) {
   const user = (req.session as any).user;
   
@@ -274,7 +273,6 @@ export async function exibirNovaInstituicao(req: Request, res: Response) {
   });
 }
 
-// ✅ CRIAR CURSO EM INSTITUIÇÃO EXISTENTE
 export async function criarCurso(req: Request, res: Response) {
   const user = (req.session as any).user;
   
