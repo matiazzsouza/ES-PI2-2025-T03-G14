@@ -291,14 +291,10 @@
             });
         });
 
-        // Adicionar nova turma
+        // Adicionar nova turma - permite navegação imediata sem delay
         document.querySelectorAll('.btn-add-turma').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const disciplinaId = this.closest('.disciplina-card').getAttribute('data-disciplina-id');
-                console.log('➕ Adicionando turma para disciplina:', disciplinaId);
-                openTurmaModal(disciplinaId);
-            });
+            // Remove qualquer interceptação - deixa o link funcionar normalmente
+            // O link já tem o href correto, então não precisa de JavaScript
         });
 
         // Gerenciar alunos

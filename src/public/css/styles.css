@@ -1064,14 +1064,21 @@ footer {
   padding: 1.5rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border-left: 4px solid #667eea;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.2s ease;
   border: 1px solid #e1e5e9;
-  animation: fadeInUp 0.6s ease-out;
+  animation: none;
+  pointer-events: auto;
 }
 
 .disciplina-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.disciplina-card .btn-add-turma {
+  pointer-events: auto !important;
+  z-index: 100 !important;
+  position: relative;
 }
 
 .card-header {
@@ -1155,6 +1162,8 @@ footer {
   margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid #e1e5e9;
+  pointer-events: auto;
+  position: relative;
 }
 
 .turmas-section h4 {
@@ -1266,6 +1275,8 @@ footer {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  pointer-events: auto;
+  position: relative;
 }
 
 .turmas-header h4 {
@@ -1282,7 +1293,7 @@ footer {
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1291,11 +1302,21 @@ footer {
   font-size: 1.1rem;
   font-weight: bold;
   text-decoration: none;
+  pointer-events: auto;
+  position: relative;
+  z-index: 10;
+  will-change: auto;
+  touch-action: manipulation;
 }
 
 .btn-add-turma:hover {
   background: linear-gradient(135deg, #20c997 0%, #198754 100%);
   transform: scale(1.1);
+  transition: transform 0.1s ease, background 0.1s ease;
+}
+
+.btn-add-turma * {
+  pointer-events: none;
 }
 
 .btn-alunos {
@@ -1465,7 +1486,7 @@ footer {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
-  animation: fadeIn 0.3s ease-out;
+  animation: none;
 }
 
 @keyframes fadeIn {
@@ -1482,7 +1503,7 @@ footer {
   max-width: 500px;
   position: relative;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  animation: modalSlideIn 0.3s ease;
+  animation: none;
   border: 1px solid #e1e5e9;
 }
 

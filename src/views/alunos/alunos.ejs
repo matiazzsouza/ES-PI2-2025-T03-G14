@@ -170,12 +170,32 @@
     .modal .modal-content h2 {
       margin:0;color:#06b6d4;font-size:1.45em;letter-spacing:1px;background:linear-gradient(to right,#0ea5e9,#7dd3fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 14px #0fa9da70;
     }
+    .gradesTable {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .gradesTable th {
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+    .gradesTable td {
+      transition: background-color 0.2s;
+    }
+    .gradesTable tr:hover td {
+      background-color: #293445;
+    }
+    .notaInput:focus {
+      outline: none;
+      border-color: #22d3ee !important;
+      box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
+    }
     @media (max-width: 700px) {
       .container { padding: 7px; }
       .topBar, .controls { flex-direction: column; gap: 11px; align-items:flex-start }
       .headerMain { margin-top: 18px; }
       .roomName { margin-bottom: 9px;}
       .modal .modal-content { min-width: 90vw; }
+      .gradesTable { font-size: 0.85em; }
+      .notaInput { width: 60px !important; padding: 4px !important; }
     }
   </style>
 </head>
@@ -184,7 +204,17 @@
   <div class="topBar">
     <div class="roomName"><%= turma?.nome || 'Turma não encontrada' %></div>
     <div class="actionButtons">
-      <form action="/turma/<%= turma?.id %>/alunos/importarAlunosCSV" method="post" enctype="multipart/form-data" style="display:inline-block;">
+      <a href="/home" class="iconButton" style="text-decoration:none;">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        Voltar para Home
+      </a>
+      <% if (disciplina && disciplina.id) { %>
+        <a href="/curso/<%= disciplina.curso_id %>/disciplinas" class="iconButton" style="text-decoration:none;">
+          <svg viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"></path></svg>
+          Voltar para Disciplina
+        </a>
+      <% } %>
+      <form action="/turma/<%= turma?.id %>/alunos/importarCSV" method="post" enctype="multipart/form-data" style="display:inline-block;">
         <label for="csvFile" class="iconButton" style="cursor:pointer;">
           <svg viewBox="0 0 24 24"><path d="M12 18V6m0 0l-6 6m6-6l6 6"></path></svg>
           Importar CSV
@@ -215,7 +245,51 @@
         Adicione alunos e componentes para visualizar a tabela.
       </div>
     <% } else { %>
-      <!-- Tabela aparecerá aqui quando houver dados -->
+      <div style="overflow-x: auto; margin-top: 20px;">
+        <table class="gradesTable" style="width: 100%; border-collapse: collapse; background: #1e293b; border-radius: 8px; overflow: hidden;">
+          <thead>
+            <tr style="background: #0ea5e9; color: white;">
+              <th style="padding: 12px; text-align: left; border: 1px solid #334155; position: sticky; left: 0; background: #0ea5e9; z-index: 10;">RA</th>
+              <th style="padding: 12px; text-align: left; border: 1px solid #334155; position: sticky; left: 80px; background: #0ea5e9; z-index: 10;">Nome</th>
+              <% componentes.forEach(componente => { %>
+                <th style="padding: 12px; text-align: center; border: 1px solid #334155; min-width: 100px;">
+                  <%= componente.nome %>
+                  <% if (componente.tipo_media === 'ponderada' && componente.peso) { %>
+                    <span style="font-size: 0.8em; display: block; color: #7dd3fc;">P: <%= componente.peso %></span>
+                  <% } %>
+                </th>
+              <% }); %>
+            </tr>
+          </thead>
+          <tbody>
+            <% alunos.forEach(aluno => { %>
+              <tr style="border-bottom: 1px solid #334155;">
+                <td style="padding: 10px; border: 1px solid #334155; position: sticky; left: 0; background: #1e293b; z-index: 5;"><%= aluno.RA %></td>
+                <td style="padding: 10px; border: 1px solid #334155; position: sticky; left: 80px; background: #1e293b; z-index: 5;"><%= aluno.nome %></td>
+                <% componentes.forEach(componente => { 
+                  const notaKey = aluno.id + '-' + componente.id;
+                  const notaValor = notas && notas[notaKey] ? notas[notaKey] : '';
+                %>
+                  <td style="padding: 5px; border: 1px solid #334155; text-align: center;">
+                    <input 
+                      type="number" 
+                      step="0.01" 
+                      min="0" 
+                      max="10" 
+                      class="notaInput"
+                      data-aluno-id="<%= aluno.id %>"
+                      data-componente-id="<%= componente.id %>"
+                      value="<%= notaValor %>"
+                      style="width: 80px; padding: 6px; border-radius: 5px; border: 1px solid #38bdf8; background: #0f172a; color: #cbd5e1; text-align: center; font-size: 0.95em;"
+                      onchange="salvarNota(this)"
+                    />
+                  </td>
+                <% }); %>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
     <% } %>
   </div>
 
@@ -315,6 +389,42 @@
           inpPeso.required = false;
         }
       });
+    }
+
+    // Salvar nota quando o campo for alterado
+    async function salvarNota(input) {
+      const alunoId = input.getAttribute('data-aluno-id');
+      const componenteId = input.getAttribute('data-componente-id');
+      const valor = input.value || null;
+
+      try {
+        const response = await fetch(`/turma/<%= turma?.id %>/notas/salvar`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            aluno_id: alunoId,
+            componente_id: componenteId,
+            valor: valor
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          // Feedback visual opcional
+          input.style.borderColor = '#22d3ee';
+          setTimeout(() => {
+            input.style.borderColor = '#38bdf8';
+          }, 500);
+        } else {
+          console.error('Erro ao salvar nota');
+          input.style.borderColor = '#fb7185';
+        }
+      } catch (error) {
+        console.error('Erro ao salvar nota:', error);
+        input.style.borderColor = '#fb7185';
+      }
     }
   </script>
 </body>
