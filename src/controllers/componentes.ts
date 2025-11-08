@@ -4,6 +4,8 @@ import { validateUserSession, getUserFromSession } from "../utils/passainfos";
 
 // Controller POST: adicionar vários componentes na turma
 export async function adicionarComponentes(req: Request, res: Response) {
+
+  
   if (!validateUserSession(req.session)) return res.redirect("/auth/login");
   const turmaId = req.params.id;
   const user = getUserFromSession(req.session);

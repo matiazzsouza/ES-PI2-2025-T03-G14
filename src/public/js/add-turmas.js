@@ -1,114 +1,172 @@
 // public/js/add-turmas.js
+// Rewritten to reduce DOM parsing and reflows — uses DocumentFragment and element builders
 document.addEventListener('DOMContentLoaded', function() {
-    let turmaCount = 1;
+    let turmaCount = document.querySelectorAll('.turma-form-group').length || 1;
     const turmasContainer = document.getElementById('turmas-container');
     const addTurmaBtn = document.getElementById('addTurmaBtn');
 
-    // Adicionar nova turma
+    function createTurmaElement(index) {
+        // Build elements using DOM API to avoid HTML string parsing overhead
+        const wrapper = document.createElement('div');
+        wrapper.className = 'turma-form-group';
+        wrapper.dataset.index = index;
+
+        const header = document.createElement('div');
+        header.className = 'turma-header';
+
+        const h3 = document.createElement('h3');
+        h3.textContent = `Turma ${index + 1}`;
+        header.appendChild(h3);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn-remove-turma';
+        removeBtn.textContent = '×';
+        header.appendChild(removeBtn);
+
+        wrapper.appendChild(header);
+
+        const row1 = document.createElement('div');
+        row1.className = 'form-row';
+        const fg1 = document.createElement('div');
+        fg1.className = 'form-group';
+        const labelNome = document.createElement('label');
+        labelNome.setAttribute('for', `turmaNome_${index}`);
+        labelNome.textContent = 'Nome da Turma *';
+        const inputNome = document.createElement('input');
+        inputNome.type = 'text';
+        inputNome.id = `turmaNome_${index}`;
+        inputNome.name = `turmas[${index}][nome]`;
+        inputNome.required = true;
+        inputNome.placeholder = 'Ex: Turma A, Noturno, Matutino';
+        fg1.appendChild(labelNome);
+        fg1.appendChild(inputNome);
+        row1.appendChild(fg1);
+        wrapper.appendChild(row1);
+
+        const row2 = document.createElement('div');
+        row2.className = 'form-row';
+
+        const fg2 = document.createElement('div');
+        fg2.className = 'form-group';
+        const labelDia = document.createElement('label');
+        labelDia.setAttribute('for', `turmaDiaSemana_${index}`);
+        labelDia.textContent = 'Dia da Semana';
+        const selectDia = document.createElement('select');
+        selectDia.id = `turmaDiaSemana_${index}`;
+        selectDia.name = `turmas[${index}][dia_semana]`;
+        ['','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'].forEach(val => {
+            const opt = document.createElement('option');
+            opt.value = val;
+            opt.textContent = val === '' ? 'Selecione o dia' : `${val}${val !== '' ? '' : ''}`;
+            selectDia.appendChild(opt);
+        });
+        fg2.appendChild(labelDia);
+        fg2.appendChild(selectDia);
+
+        const fg3 = document.createElement('div');
+        fg3.className = 'form-group';
+        const labelHorario = document.createElement('label');
+        labelHorario.setAttribute('for', `turmaHorario_${index}`);
+        labelHorario.textContent = 'Horário';
+        const inputHorario = document.createElement('input');
+        inputHorario.type = 'time';
+        inputHorario.id = `turmaHorario_${index}`;
+        inputHorario.name = `turmas[${index}][horario]`;
+        fg3.appendChild(labelHorario);
+        fg3.appendChild(inputHorario);
+
+        row2.appendChild(fg2);
+        row2.appendChild(fg3);
+        wrapper.appendChild(row2);
+
+        const fg4 = document.createElement('div');
+        fg4.className = 'form-group';
+        const labelLocal = document.createElement('label');
+        labelLocal.setAttribute('for', `turmaLocal_${index}`);
+        labelLocal.textContent = 'Local';
+        const inputLocal = document.createElement('input');
+        inputLocal.type = 'text';
+        inputLocal.id = `turmaLocal_${index}`;
+        inputLocal.name = `turmas[${index}][local]`;
+        inputLocal.placeholder = 'Ex: Sala 101, Laboratório 2';
+        fg4.appendChild(labelLocal);
+        fg4.appendChild(inputLocal);
+        wrapper.appendChild(fg4);
+
+        return wrapper;
+    }
+
     addTurmaBtn.addEventListener('click', function() {
+        // Minimiza reflows: criar fragmento e anexar de uma vez
+        const idx = turmaCount; // próximo índice
+        const frag = document.createDocumentFragment();
+        const turmaEl = createTurmaElement(idx);
+        frag.appendChild(turmaEl);
+        turmasContainer.appendChild(frag);
         turmaCount++;
-        
-        const newTurmaHTML = `
-            <div class="turma-form-group" data-index="${turmaCount - 1}">
-                <div class="turma-header">
-                    <h3>Turma ${turmaCount}</h3>
-                    <button type="button" class="btn-remove-turma">×</button>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="turmaNome_${turmaCount - 1}">Nome da Turma *</label>
-                        <input type="text" id="turmaNome_${turmaCount - 1}" name="turmas[${turmaCount - 1}][nome]" required 
-                               placeholder="Ex: Turma A, Noturno, Matutino">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="turmaDiaSemana_${turmaCount - 1}">Dia da Semana</label>
-                        <select id="turmaDiaSemana_${turmaCount - 1}" name="turmas[${turmaCount - 1}][dia_semana]">
-                            <option value="">Selecione o dia</option>
-                            <option value="Segunda">Segunda-feira</option>
-                            <option value="Terça">Terça-feira</option>
-                            <option value="Quarta">Quarta-feira</option>
-                            <option value="Quinta">Quinta-feira</option>
-                            <option value="Sexta">Sexta-feira</option>
-                            <option value="Sábado">Sábado</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="turmaHorario_${turmaCount - 1}">Horário</label>
-                        <input type="time" id="turmaHorario_${turmaCount - 1}" name="turmas[${turmaCount - 1}][horario]">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="turmaLocal_${turmaCount - 1}">Local</label>
-                    <input type="text" id="turmaLocal_${turmaCount - 1}" name="turmas[${turmaCount - 1}][local]" 
-                           placeholder="Ex: Sala 101, Laboratório 2">
-                </div>
-            </div>
-        `;
-        
-        turmasContainer.insertAdjacentHTML('beforeend', newTurmaHTML);
-        
-        // Mostrar botão de remover na primeira turma
-        if (turmaCount === 2) {
-            document.querySelector('.turma-form-group:first-child .btn-remove-turma').style.display = 'block';
-        }
+
+        // Mostrar botão de remover na primeira turma (se existirem 2+) de forma segura
+        const firstRemove = document.querySelector('.turma-form-group:first-child .btn-remove-turma');
+        if (firstRemove) firstRemove.style.display = turmaCount > 1 ? 'block' : 'none';
     });
 
-    // Remover turma
+    // Remover turma (delegação)
     turmasContainer.addEventListener('click', function(e) {
         if (e.target.classList.contains('btn-remove-turma')) {
             const turmaGroup = e.target.closest('.turma-form-group');
             turmaGroup.remove();
-            turmaCount--;
-            
-            // Reorganizar números e índices
+            turmaCount = document.querySelectorAll('.turma-form-group').length || 1;
+
+            // Reorganizar números e índices (atualizar names/ids)
             const allTurmas = document.querySelectorAll('.turma-form-group');
             allTurmas.forEach((turma, index) => {
-                turma.setAttribute('data-index', index);
-                turma.querySelector('h3').textContent = `Turma ${index + 1}`;
-                
-                // Atualizar names dos inputs
-                const inputs = turma.querySelectorAll('input, select');
+                turma.dataset.index = index;
+                const h3 = turma.querySelector('h3');
+                if (h3) h3.textContent = `Turma ${index + 1}`;
+                const inputs = turma.querySelectorAll('input, select, textarea');
                 inputs.forEach(input => {
                     const name = input.getAttribute('name');
                     if (name) {
                         const newName = name.replace(/\[\d+\]/, `[${index}]`);
                         input.setAttribute('name', newName);
-                        input.setAttribute('id', newName.replace(/\[/g, '_').replace(/\]/g, ''));
+                    }
+                    // Update id where applicable
+                    if (input.id) {
+                        const base = input.id.replace(/_\d+$/, '');
+                        input.id = `${base}_${index}`;
                     }
                 });
             });
-            
-            // Esconder botão de remover se só tiver uma turma
-            if (turmaCount === 1) {
-                document.querySelector('.btn-remove-turma').style.display = 'none';
+
+            // Ajustar visibilidade do botão remover
+            const remainingRemoves = document.querySelectorAll('.btn-remove-turma');
+            if (remainingRemoves.length === 1) {
+                remainingRemoves[0].style.display = 'none';
             }
         }
     });
 
     // Validação do formulário
-    document.getElementById('turmasForm').addEventListener('submit', function(e) {
-        const turmas = document.querySelectorAll('.turma-form-group');
-        let isValid = true;
-        
-        turmas.forEach(turma => {
-            const nomeInput = turma.querySelector('input[type="text"]');
-            if (!nomeInput.value.trim()) {
-                isValid = false;
-                nomeInput.style.borderColor = '#dc2626';
-            } else {
-                nomeInput.style.borderColor = '';
+    const turmasForm = document.getElementById('turmasForm');
+    if (turmasForm) {
+        turmasForm.addEventListener('submit', function(e) {
+            const turmas = document.querySelectorAll('.turma-form-group');
+            let isValid = true;
+            turmas.forEach(turma => {
+                const nomeInput = turma.querySelector('input[type="text"]');
+                if (nomeInput && !nomeInput.value.trim()) {
+                    isValid = false;
+                    nomeInput.style.borderColor = '#dc2626';
+                } else if (nomeInput) {
+                    nomeInput.style.borderColor = '';
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Por favor, preencha o nome de todas as turmas.');
             }
         });
-        
-        if (!isValid) {
-            e.preventDefault();
-            alert('Por favor, preencha o nome de todas as turmas.');
-        }
-    });
+    }
 });

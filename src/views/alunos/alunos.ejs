@@ -30,6 +30,32 @@
       -webkit-text-fill-color: transparent;
       text-shadow: 0 2px 22px #0f172a44;
     }
+    .alunos-header-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 38px;
+    }
+    .plainButton {
+      background: #1e293b;
+      color: #7dd3fc;
+      border: 1px solid #334155;
+      border-radius: 7px;
+      padding: 9px 22px;
+      cursor: pointer;
+      font-weight: 500;
+      box-shadow: 0 2px 8px #0ea5e91a;
+      transition: background .16s, color .16s, border .16s;
+      font-size: 1em;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .plainButton:hover, .plainButton:focus {
+      background: #0ea5e9;
+      color: #fff;
+      border: 1px solid #38bdf8;
+      outline: none;
+    }
     .topBar {
       display: flex;
       justify-content: space-between;
@@ -98,24 +124,6 @@
       margin-bottom: 18px;
       margin-top: 10px;
     }
-    .plainButton {
-      background: #1e293b;
-      color: #7dd3fc;
-      border: 1px solid #334155;
-      border-radius: 7px;
-      padding: 9px 22px;
-      cursor: pointer;
-      font-weight: 500;
-      box-shadow: 0 2px 8px #0ea5e91a;
-      transition: background .16s, color .16s, border .16s;
-      font-size: 1em;
-    }
-    .plainButton:hover, .plainButton:focus {
-      background: #0ea5e9;
-      color: #fff;
-      border: 1px solid #38bdf8;
-      outline: none;
-    }
     .emptyState {
       text-align: center;
       margin: 24px 0;
@@ -177,10 +185,25 @@
       .roomName { margin-bottom: 9px;}
       .modal .modal-content { min-width: 90vw; }
     }
+    table { width: 100%; margin-top: 12px; border-collapse: collapse; }
+    th, td { padding: 8px; border-bottom: 1px solid #334155; }
+    th { font-weight: bold; }
   </style>
 </head>
 <body>
   <div class="headerMain"><h1>NotaDez</h1></div>
+<div style="text-align:center; margin-bottom:30px; margin-top:16px;">
+  <a href="/home" style="color:#e3e6ed; text-decoration:none; font-size:1.08em;">Home</a>
+  <span style="color:#fff; margin:0 9px;">/</span>
+  <% if (curso && curso.id) { %>
+    <a href="/curso/<%= curso.id %>/disciplinas" style="color:#e3e6ed; text-decoration:none; font-size:1.08em;">Disciplinas</a>
+  <% } else { %>
+    <span style="color:#7dd3fc; font-size:1.08em;">Disciplinas</span>
+  <% } %>
+</div>
+
+
+
   <div class="topBar">
     <div class="roomName"><%= turma?.nome || 'Turma não encontrada' %></div>
     <div class="actionButtons">
@@ -215,10 +238,32 @@
         Adicione alunos e componentes para visualizar a tabela.
       </div>
     <% } else { %>
-      <!-- Tabela aparecerá aqui quando houver dados -->
+      <table>
+        <thead>
+          <tr>
+            <th style="color:#38bdf8;">Nome</th>
+            <th style="color:#38bdf8;">RA</th>
+            <% componentes.forEach(componente => { %>
+              <th style="color:#06b6d4;"><%= componente.nome %></th>
+            <% }) %>
+            <th style="color:#22d3ee;">Média</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% alunos.forEach(aluno => { %>
+            <tr>
+              <td><%= aluno.nome %></td>
+              <td><%= aluno.RA %></td>
+              <% componentes.forEach(_ => { %>
+                <td></td>
+              <% }) %>
+              <td></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
     <% } %>
   </div>
-
   <!-- MODAL: Adicionar aluno -->
   <div id="modalAluno" class="modal">
     <div class="modal-content">
@@ -241,7 +286,6 @@
       </form>
     </div>
   </div>
-
   <!-- MODAL: Adicionar componentes -->
   <div id="modalComponente" class="modal">
     <div class="modal-content" style="min-width:400px;">
@@ -293,9 +337,9 @@
       linha.style.alignItems = "center";
       linha.style.marginBottom = "7px";
       linha.innerHTML =
-          `<input type="text" required name="componentes[${idx}][nome]" placeholder="Nome do componente" style="padding:7px;width:170px;border-radius:7px;border:1.5px solid #38bdf8;background:#1e293b;color:#cbd5e1;">
-           <input type="number" required name="componentes[${idx}][peso]" placeholder="Peso" step="0.01" min="0" max="1" style="padding:7px;width:70px;border-radius:7px;border:1.5px solid #38bdf8;background:#1e293b;color:#cbd5e1;display:none;">
-           <button type="button" onclick="removerLinhaComponente(this)" style="background:#384254;color:#fb7185;border:none;padding:7px 13px;border-radius:7px;font-weight:700;cursor:pointer;">X</button>`;
+        `<input type="text" required name="componentes[${idx}][nome]" placeholder="Nome do componente" style="padding:7px;width:170px;border-radius:7px;border:1.5px solid #38bdf8;background:#1e293b;color:#cbd5e1;">
+         <input type="number" required name="componentes[${idx}][peso]" placeholder="Peso" step="0.01" min="0" max="1" style="padding:7px;width:70px;border-radius:7px;border:1.5px solid #38bdf8;background:#1e293b;color:#cbd5e1;display:none;">
+         <button type="button" onclick="removerLinhaComponente(this)" style="background:#384254;color:#fb7185;border:none;padding:7px 13px;border-radius:7px;font-weight:700;cursor:pointer;">X</button>`;
       container.appendChild(linha);
       alteraTipoMedia();
     }

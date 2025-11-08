@@ -2,8 +2,6 @@ import { Request, Response } from "express";
 import { pool } from "../database/database-fixed";
 import { validateUserSession, getUserFromSession } from "../utils/passainfos";
 
-
-
 export async function exibirPaginaAlunos(req: Request, res: Response) {
   if (!validateUserSession(req.session)) {
     return res.redirect("/auth/login");
@@ -17,27 +15,47 @@ export async function exibirPaginaAlunos(req: Request, res: Response) {
   const error = req.query.error ? String(req.query.error) : null;
 
   try {
+    // Busca a turma e disciplina
     const [turmaRows]: any = await pool.query(
-      "SELECT id, nome FROM turmas WHERE id = ?", [turmaId]
+      "SELECT id, nome, disciplina_id FROM turmas WHERE id = ?", [turmaId]
     );
     const turma = turmaRows.length ? turmaRows[0] : null;
 
+    // Busca os alunos
     const [alunosRows]: any = await pool.query(
       `SELECT a.id, a.RA, a.nome
-         FROM aluno_turma at
-         JOIN alunos a ON at.aluno_id = a.id
-         WHERE at.turma_id = ?
-         ORDER BY a.nome`,
+       FROM aluno_turma at
+       JOIN alunos a ON at.aluno_id = a.id
+       WHERE at.turma_id = ?
+       ORDER BY a.nome`,
       [turmaId]
     );
 
-    const componentesRows: any[] = [];
+    // Busca componentes
+    const [componentesRows]: any = await pool.query(
+      "SELECT id, nome, tipo_media, peso FROM componentes WHERE turma_id = ? ORDER BY id",
+      [turmaId]
+    );
+
+    // Busca curso via disciplina_id da turma
+    let curso = null;
+    if (turma && turma.disciplina_id) {
+      const [cursoRows]: any = await pool.query(
+        `SELECT c.id, c.nome 
+         FROM cursos c
+         JOIN disciplinas d ON d.curso_id = c.id
+         WHERE d.id = ?`,
+        [turma.disciplina_id]
+      );
+      curso = cursoRows.length ? cursoRows[0] : null;
+    }
 
     res.render("alunos/alunos", {
       title: "Grade de Alunos",
       turma,
       alunos: alunosRows,
       componentes: componentesRows,
+      curso,
       user,
       success,
       error
@@ -49,12 +67,14 @@ export async function exibirPaginaAlunos(req: Request, res: Response) {
       turma: null,
       alunos: [],
       componentes: [],
+      curso: null,
       user,
       success: null,
       error: "Erro ao buscar dados da turma."
     });
   }
 }
+
 
 export async function AdicionarAluno(req: Request, res: Response) {
   if (!validateUserSession(req.session)) {
