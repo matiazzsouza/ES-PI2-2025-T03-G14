@@ -11,6 +11,7 @@ import { pool } from './database/database-fixed';
 import { testConnection } from './database/testConnection';
 import { validatePassword } from './utils/passwordValidator';
 
+
 import {
   getUserByEmail, 
   createUser, 
@@ -79,7 +80,21 @@ import {
 
 } from './controllers/componentes'; 
 
+import { 
+  importarAlunosCSV,
+  exportarAlunosCSV,
+  multerErrorHandler 
 
+} from "./controllers/csv";
+
+import { 
+  buscarNotasTurma, 
+  salvarNotaIndividual, 
+  salvarNotasLote 
+} from './controllers/notas';
+
+
+import upload from "./utils/upload-multer";
 
 
 const app = express();
@@ -482,7 +497,6 @@ app.put("/api/instituicoes/:id", editarInstituicao);
 app.delete("/api/instituicoes/:id", excluirInstituicao);
 app.put("/api/cursos/:id", editarCurso);
 app.delete("/api/cursos/:id", excluirCurso);
-// Na seção de rotas de instituições, adicione:
 app.post("/api/instituicoes/:id/cursos", criarCurso);
 
   //! --- DISCIPLINAS ---
@@ -490,7 +504,7 @@ app.post("/api/instituicoes/:id/cursos", criarCurso);
   app.get("/curso/:id/disciplinas/add", exibirAddDisciplina);
   app.post("/curso/:id/disciplinas/add", criarDisciplina);
 
-  // API Disciplinas - ROTAS ADICIONADAS
+
   app.get("/api/disciplinas", listarTodasDisciplinas);
   app.get("/api/disciplinas/:id", obterDisciplinaPorId);
   app.put("/api/disciplinas/:id", editarDisciplina);
@@ -504,7 +518,7 @@ app.post("/api/instituicoes/:id/cursos", criarCurso);
   app.put("/api/turmas/:id", editarTurma);
   app.delete("/api/turmas/:id", excluirTurma);
 
-  // Páginas Turmas (EJS) - Novas rotas para telas
+
   app.get("/disciplina/:id/turmas/add", exibirAddTurmas);
   app.post("/disciplina/:id/turmas/multiple", criarMultiplasTurmas);
 
@@ -514,6 +528,20 @@ app.post("/api/instituicoes/:id/cursos", criarCurso);
 app.get("/turma/:id/alunos", exibirPaginaAlunos);
 app.post("/turma/:id/alunos", AdicionarAluno);
 app.post("/turma/:id/componentes/adicionar", adicionarComponentes);
+
+
+//? :::: IMPORTAÇÃO :::::
+
+//app.post("/turma/:id/alunos/importarAlunosCSV", upload.single("csvFile"), multerErrorHandler, importarAlunosCSV);
+
+
+
+
+//! --- NOTAS ---
+
+app.get("/turma/:turmaId/notas", buscarNotasTurma);
+app.post("/turma/:turmaId/aluno/:alunoId/nota", salvarNotaIndividual);
+app.post("/turma/:turmaId/notas/batch", salvarNotasLote);
 
 
   

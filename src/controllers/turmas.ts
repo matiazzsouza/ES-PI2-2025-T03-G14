@@ -178,21 +178,20 @@ export async function excluirTurma(req: Request, res: Response) {
     const nomeTurma = turma.nome;
 
     // ✅ VERIFICAR SE TEM ALUNOS
-    const [alunos]: any = await pool.query(
-      "SELECT COUNT(*) as total FROM alunos WHERE turma_id = ?",
+    const [alunosTurma]: any = await pool.query(
+      "SELECT COUNT(*) as total FROM aluno_turma WHERE turma_id = ?",
       [turmaId]
     );
 
-    const totalAlunos = alunos[0].total;
+    const totalAlunos = alunosTurma[0].total;
 
     if (totalAlunos > 0) {
-      return res.status(400).json({ 
-        success: false,
-        error: "Não é possível excluir turma com alunos matriculados.",
-        message: `A turma "${nomeTurma}" possui ${totalAlunos} aluno(s) matriculado(s). Remova todos os alunos primeiro.`
-      });
-    }
-
+    return res.status(400).json({
+      success: false,
+      error: "Não é possível excluir turma com alunos vinculados.",
+      message: `Remova todos os alunos da turma antes de excluir.`
+  });
+}
     // ✅ PRIMEIRA CHAMADA - SEM CONFIRMAÇÃO
     if (confirmacao === undefined) {
       return res.status(200).json({
