@@ -48,3 +48,60 @@ export async function adicionarComponentes(req: Request, res: Response) {
     return res.redirect(`/turma/${turmaId}/alunos?error=Erro ao adicionar componentes`);
   }
 }
+
+
+export async function deletarComponente(req: Request, res: Response) {
+  if (!validateUserSession(req.session)) {
+    return res.status(401).json({ error: "Usuário não autenticado" });
+  }
+
+  const turmaId = Number(req.params.turmaId);
+  const componenteId = Number(req.params.componenteId);
+
+  if (!componenteId || !turmaId) {
+    return res.status(400).json({ error: "IDs inválidos" });
+  }
+
+  try {
+    // Remove o componente da turma
+    await pool.query(
+      "DELETE FROM componentes WHERE id = ? AND turma_id = ?",
+      [componenteId, turmaId]
+    );
+
+    return res.status(200).json({ success: true, message: "Componente removido com sucesso!" });
+  } catch (err) {
+    console.error("❌ Erro ao remover componente:", err);
+    return res.status(500).json({ error: "Erro ao remover componente" });
+  }
+}
+
+export async function editarComponente(req: Request, res: Response) {
+  if (!validateUserSession(req.session)) {
+    return res.status(401).json({ error: "Usuário não autenticado" });
+  }
+
+  const componenteId = Number(req.params.componenteId);
+  const { nome, tipo_media, peso } = req.body;
+
+  if (!componenteId || !nome || !tipo_media) {
+    return res.status(400).json({ error: "Dados inválidos" });
+  }
+
+  // Validação de peso se for ponderada
+  if (tipo_media === 'ponderada' && (!peso || peso < 0 || peso > 1)) {
+    return res.status(400).json({ error: "Peso inválido para média ponderada (deve ser entre 0 e 1)" });
+  }
+
+  try {
+    await pool.query(
+      "UPDATE componentes SET nome = ?, tipo_media = ?, peso = ? WHERE id = ?",
+      [nome, tipo_media, tipo_media === 'ponderada' ? peso : null, componenteId]
+    );
+
+    return res.status(200).json({ success: true, message: "Componente atualizado!" });
+  } catch (err) {
+    console.error("❌ Erro ao editar componente:", err);
+    return res.status(500).json({ error: "Erro ao editar componente" });
+  }
+}

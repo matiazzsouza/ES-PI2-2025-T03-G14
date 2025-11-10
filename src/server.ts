@@ -71,12 +71,16 @@ import {
 
 import { 
   exibirPaginaAlunos,
-  AdicionarAluno
+  AdicionarAluno,
+  editarAluno,
+  deletaAluno
 } from './controllers/alunos'; 
 
 
 import { 
-  adicionarComponentes 
+  adicionarComponentes, 
+  deletarComponente,
+  editarComponente
 
 } from './controllers/componentes'; 
 
@@ -92,6 +96,13 @@ import {
   salvarNotaIndividual, 
   salvarNotasLote 
 } from './controllers/notas';
+
+import { 
+  calcularMediaAluno,
+  listarMedias,
+  salvarMedia
+
+ } from "./controllers/medias";
 
 
 import upload from "./utils/upload-multer";
@@ -527,14 +538,19 @@ app.post("/api/instituicoes/:id/cursos", criarCurso);
 
 app.get("/turma/:id/alunos", exibirPaginaAlunos);
 app.post("/turma/:id/alunos", AdicionarAluno);
-app.post("/turma/:id/componentes/adicionar", adicionarComponentes);
+app.delete("/turma/:id/aluno/deletaAluno/:alunoId",deletaAluno);
+app.put("/api/alunos/:alunoId", editarAluno);
+
 
 
 //? :::: IMPORTAÇÃO :::::
 
 //app.post("/turma/:id/alunos/importarAlunosCSV", upload.single("csvFile"), multerErrorHandler, importarAlunosCSV);
 
-
+//! COMPONENTES ---
+app.delete("/turma/:turmaId/componente/:componenteId", deletarComponente);
+app.post("/turma/:id/componentes/adicionar", adicionarComponentes);
+app.put("/api/componentes/:componenteId", editarComponente);
 
 
 //! --- NOTAS ---
@@ -544,7 +560,15 @@ app.post("/turma/:turmaId/aluno/:alunoId/nota", salvarNotaIndividual);
 app.post("/turma/:turmaId/notas/batch", salvarNotasLote);
 
 
+//! --- MEDIAS ---
+
+app.get("/turma/:turmaId/aluno/:alunoId/media", calcularMediaAluno);
+app.get("/turma/:turmaId/medias", listarMedias);
+app.post("/turma/:turmaId/medias/salvar", salvarMedia);
+
+
   
+
   //! --- PÁGINA WEB ---
   app.get("/web", (req, res) => {
     res.render("auth/login", { title: "Página Web", error: null });
