@@ -538,7 +538,7 @@ app.post("/api/instituicoes/:id/cursos", criarCurso);
 
 app.get("/turma/:id/alunos", exibirPaginaAlunos);
 app.post("/turma/:id/alunos", AdicionarAluno);
-app.delete("/turma/:id/aluno/deletaAluno/:alunoId",deletaAluno);
+app.delete("/turma/:turmaId/aluno/deletaAluno/:alunoId", deletaAluno);
 app.put("/api/alunos/:alunoId", editarAluno);
 
 
@@ -548,9 +548,9 @@ app.put("/api/alunos/:alunoId", editarAluno);
 //app.post("/turma/:id/alunos/importarAlunosCSV", upload.single("csvFile"), multerErrorHandler, importarAlunosCSV);
 
 //! COMPONENTES ---
-app.delete("/turma/:turmaId/componente/:componenteId", deletarComponente);
 app.post("/turma/:id/componentes/adicionar", adicionarComponentes);
 app.put("/api/componentes/:componenteId", editarComponente);
+app.delete("/turma/:turmaId/componente/:componenteId", deletarComponente);
 
 
 //! --- NOTAS ---

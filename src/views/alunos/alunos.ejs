@@ -5,245 +5,37 @@
   <title>NotaDez - Grade de Alunos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      background: #101827;
-      color: #cbd5e1;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-    }
-    .headerMain {
-      margin-top: 40px;
-      margin-bottom: 22px;
-      text-align: center;
-      letter-spacing: 2px;
-    }
-    .headerMain h1 {
-      font-size: 2.4em;
-      font-weight: 700;
-      color: #22d3ee;
-      margin: 0;
-      letter-spacing: 2px;
-      background: linear-gradient(to right, #0ea5e9 0%, #06b6d4 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 2px 22px #0f172a44;
-    }
-    .plainButton {
-      background: #1e293b;
-      color: #7dd3fc;
-      border: 1px solid #334155;
-      border-radius: 7px;
-      padding: 9px 22px;
-      cursor: pointer;
-      font-weight: 500;
-      box-shadow: 0 2px 8px #0ea5e91a;
-      transition: background .16s, color .16s, border .16s;
-      font-size: 1em;
-      text-decoration: none;
-      display: inline-block;
-    }
-    .plainButton:hover, .plainButton:focus {
-      background: #0ea5e9;
-      color: #fff;
-      border: 1px solid #38bdf8;
-      outline: none;
-    }
-    .topBar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 1100px;
-      margin: 0 auto 30px auto;
-      padding: 0 50px;
-      margin-top: 108px;
-    }
-    .roomName {
-      font-size: 1.12em;
-      font-weight: 500;
-      color: #7dd3fc;
-      background: #181c22;
-      padding: 6px 18px 7px 18px;
-      border-radius: 13px;
-      box-shadow: 0 2px 11px #22d3ee19;
-      letter-spacing: 0.5px;
-      border: 1px solid #344155;
-    }
-    .actionButtons {
-      display: flex;
-      gap: 26px;
-    }
-    .iconButton {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 17px;
-      font-size: 1em;
-      border-radius: 8px;
-      border: none;
-      background: linear-gradient(to right, #164e63 40%, #0ea5e9 100%);
-      color: #fff;
-      box-shadow: 0 2px 20px #22d3ee40;
-      cursor: pointer;
-      font-weight: 500;
-      transition: transform .11s, box-shadow .19s, background .19s;
-      outline: none;
-    }
-    .iconButton:hover, .iconButton:focus {
-      box-shadow: 0 2px 32px #06b6d4a0;
-      background: linear-gradient(to right, #0ea5e9 10%, #164e63 95%);
-      outline: 1px solid #38bdf8;
-    }
-    .container {
-      max-width: 900px;
-      margin: 26px auto 0 auto;
-      background: #181c22;
-      border-radius: 16px;
-      padding: 32px 18px 22px 18px;
-      box-shadow: 0 8px 28px #111e2f50;
-      border: 1px solid #293445;
-    }
-    .controls {
-      display: flex;
-      gap: 13px;
-      justify-content: flex-start;
-      margin-bottom: 18px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-    .emptyState {
-      text-align: center;
-      margin: 24px 0;
-      background: #111c25d4;
-      color: #38bdf8;
-      padding: 2.2rem 0;
-      border-radius: 14px;
-      font-size: 1.08em;
-      letter-spacing: 1px;
-      border: 1px solid #344155;
-    }
-    .alert {
-      position: relative;
-      margin: 20px 0 16px 0;
-      padding: 15px 24px;
-      border-radius: 8px;
-      font-size: 1.08em;
-      font-weight: 500;
-      letter-spacing: 1px;
-      box-shadow: 0 3px 13px #0ea5e940;
-      border: 1.5px solid #38bdf8;
-      background: #0ea5e95b;
-      color: #22d3ee;
-      text-align: center;
-      z-index: 2;
-      animation: fadeIn 0.4s;
-    }
-    .alert.error {
-      background: #251c251e;
-      color: #fb7185;
-      border-color: #fb7185;
-    }
-    .alert.success {
-      background: #052841cf;
-      color: #22d3ee;
-      border-color: #38bdf8;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-15px);}
-      to { opacity: 1; transform: none;}
-    }
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #111c25d8;
-      z-index: 989;
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal.active {
-      display: flex;
-    }
-    .modal .modal-content {
-      background: #181c22;
-      border-radius: 14px;
-      box-shadow: 0 2px 12px #0ea5e983;
-      padding: 30px 38px;
-      min-width: 340px;
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    .modal .modal-content h2 {
-      margin: 0;
-      color: #06b6d4;
-      font-size: 1.45em;
-      letter-spacing: 1px;
-      background: linear-gradient(to right, #0ea5e9, #7dd3fc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 2px 14px #0fa9da70;
-    }
-    table {
-      width: 100%;
-      margin-top: 12px;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 8px;
-      border-bottom: 1px solid #334155;
-      text-align: left;
-    }
-    th {
-      font-weight: bold;
-      background: #0ea5e9;
-      color: #fff;
-    }
-    tr:hover td {
-      background-color: #293445;
-    }
-    .notaInput {
-      width: 70px;
-      padding: 5px;
-      border-radius: 5px;
-      border: 1px solid #38bdf8;
-      background: #0f172a;
-      color: #cbd5e1;
-      text-align: center;
-      font-size: 1em;
-    }
-    .notaInput:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .notaInput:focus {
-      outline: none;
-      border-color: #22d3ee;
-      box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
-    }
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-      -webkit-appearance: none !important;
-      margin: 0;
-    }
-    input[type=number] {
-      -moz-appearance: textfield !important;
-    }
-    @media (max-width: 700px) {
-      .topBar {
-        flex-direction: column;
-      }
-      .controls {
-        flex-direction: column;
-      }
-    }
+    body { background: #101827; color: #cbd5e1; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; min-height: 100vh; }
+    .headerMain { margin-top: 40px; margin-bottom: 22px; text-align: center; letter-spacing: 2px; }
+    .headerMain h1 { font-size: 2.4em; font-weight: 700; color: #22d3ee; margin: 0; letter-spacing: 2px; background: linear-gradient(to right, #0ea5e9 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 2px 22px #0f172a44; }
+    .plainButton { background: #1e293b; color: #7dd3fc; border: 1px solid #334155; border-radius: 7px; padding: 9px 22px; cursor: pointer; font-weight: 500; box-shadow: 0 2px 8px #0ea5e91a; transition: background .16s, color .16s, border .16s; font-size: 1em; text-decoration: none; display: inline-block; }
+    .plainButton:hover, .plainButton:focus { background: #0ea5e9; color: #fff; border: 1px solid #38bdf8; outline: none; }
+    .topBar { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto 30px auto; padding: 0 50px; margin-top: 108px; }
+    .roomName { font-size: 1.12em; font-weight: 500; color: #7dd3fc; background: #181c22; padding: 6px 18px 7px 18px; border-radius: 13px; box-shadow: 0 2px 11px #22d3ee19; letter-spacing: 0.5px; border: 1px solid #344155; }
+    .actionButtons { display: flex; gap: 26px; }
+    .iconButton { display: inline-flex; align-items: center; justify-content: center; padding: 8px 17px; font-size: 1em; border-radius: 8px; border: none; background: linear-gradient(to right, #164e63 40%, #0ea5e9 100%); color: #fff; box-shadow: 0 2px 20px #22d3ee40; cursor: pointer; font-weight: 500; transition: transform .11s, box-shadow .19s, background .19s; outline: none; }
+    .iconButton:hover, .iconButton:focus { box-shadow: 0 2px 32px #06b6d4a0; background: linear-gradient(to right, #0ea5e9 10%, #164e63 95%); outline: 1px solid #38bdf8; }
+    .container { max-width: 900px; margin: 26px auto 0 auto; background: #181c22; border-radius: 16px; padding: 32px 18px 22px 18px; box-shadow: 0 8px 28px #111e2f50; border: 1px solid #293445; }
+    .controls { display: flex; gap: 13px; justify-content: flex-start; margin-bottom: 18px; margin-top: 10px; flex-wrap: wrap; }
+    .emptyState { text-align: center; margin: 24px 0; background: #111c25d4; color: #38bdf8; padding: 2.2rem 0; border-radius: 14px; font-size: 1.08em; letter-spacing: 1px; border: 1px solid #344155; }
+    .alert { position: relative; margin: 20px 0 16px 0; padding: 15px 24px; border-radius: 8px; font-size: 1.08em; font-weight: 500; letter-spacing: 1px; box-shadow: 0 3px 13px #0ea5e940; border: 1.5px solid #38bdf8; background: #0ea5e95b; color: #22d3ee; text-align: center; z-index: 2; animation: fadeIn 0.4s; }
+    .alert.error { background: #251c251e; color: #fb7185; border-color: #fb7185; }
+    .alert.success { background: #052841cf; color: #22d3ee; border-color: #38bdf8; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-15px);} to { opacity: 1; transform: none;} }
+    .modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #111c25d8; z-index: 989; display: none; justify-content: center; align-items: center; }
+    .modal.active { display: flex; }
+    .modal .modal-content { background: #181c22; border-radius: 14px; box-shadow: 0 2px 12px #0ea5e983; padding: 30px 38px; min-width: 340px; max-width: 600px; display: flex; flex-direction: column; gap: 20px; max-height: 80vh; overflow-y: auto; }
+    .modal .modal-content h2 { margin: 0; color: #06b6d4; font-size: 1.45em; letter-spacing: 1px; background: linear-gradient(to right, #0ea5e9, #7dd3fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 2px 14px #0fa9da70; }
+    table { width: 100%; margin-top: 12px; border-collapse: collapse; }
+    th, td { padding: 8px; border-bottom: 1px solid #334155; text-align: left; }
+    th { font-weight: bold; background: #0ea5e9; color: #fff; }
+    tr:hover td { background-color: #293445; }
+    .notaInput { width: 70px; padding: 5px; border-radius: 5px; border: 1px solid #38bdf8; background: #0f172a; color: #cbd5e1; text-align: center; font-size: 1em; }
+    .notaInput:disabled { opacity: 0.5; cursor: not-allowed; }
+    .notaInput:focus { outline: none; border-color: #22d3ee; box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2); }
+    input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none !important; margin: 0; }
+    input[type=number] { -moz-appearance: textfield !important; }
+    @media (max-width: 700px) { .topBar { flex-direction: column; } .controls { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -257,13 +49,11 @@
       <span style="color:#7dd3fc; font-size:1.08em;">Disciplinas</span>
     <% } %>
   </div>
-
   <div class="topBar">
     <div class="roomName"><%= turma?.nome || 'Turma não encontrada' %></div>
     <div class="actionButtons">
       <form action="/turma/<%= turma?.id %>/alunos/importarAlunosCSV" method="post" enctype="multipart/form-data" style="display:inline-block;">
-        <label for="csvFile" class="iconButton" style="cursor:pointer;">
-          Importar CSV
+        <label for="csvFile" class="iconButton" style="cursor:pointer;">Importar CSV
           <input type="file" id="csvFile" name="csvFile" accept=".csv" style="display:none" onchange="this.form.submit()">
         </label>
       </form>
@@ -272,7 +62,6 @@
       </form>
     </div>
   </div>
-
   <div class="container">
     <div class="controls">
       <button class="plainButton" type="button" onclick="abrirModalAluno()">Adicionar Aluno</button>
@@ -287,9 +76,7 @@
       <div class="alert error"><%= error %></div>
     <% } %>
     <% if (alunos.length === 0 || componentes.length === 0) { %>
-      <div class="emptyState">
-        Adicione alunos e componentes para visualizar a tabela.
-      </div>
+      <div class="emptyState">Adicione alunos e componentes para visualizar a tabela.</div>
     <% } else { %>
       <div style="overflow-x: auto;">
         <table id="tabelaNotas">
@@ -337,7 +124,13 @@
                     />
                   </td>
                 <% }); %>
-                <td>-</td>
+                <td>
+                  <%
+                    let mediaValor = mediasMap[aluno.id];
+                    let mediaNum = Number(mediaValor);
+                  %>
+                  <%= (!isNaN(mediaNum) && mediaValor !== null && mediaValor !== undefined) ? mediaNum.toFixed(2) : "-" %>
+                </td>
                 <td>
                   <button type="button" class="plainButton" style="padding:4px 10px;font-size:0.85em;" onclick="abrirModalEditarAlunoBtn(this.closest('tr'))">Editar</button>
                   <button type="button" class="plainButton" style="padding:4px 10px;font-size:0.85em;background:#fb7185;color:#fff;" onclick="deletarAlunoBtn(this.closest('tr'))">Remover</button>
@@ -349,8 +142,6 @@
       </div>
     <% } %>
   </div>
-
-  <!-- MODAL: Adicionar aluno -->
   <div id="modalAluno" class="modal">
     <div class="modal-content">
       <form action="/turma/<%= turma?.id %>/alunos" method="post" style="width:100%;display:flex;flex-direction:column;gap:20px;">
@@ -372,14 +163,11 @@
       </form>
     </div>
   </div>
-
-  <!-- MODAL: Adicionar componentes -->
   <div id="modalComponente" class="modal">
     <div class="modal-content" style="min-width:400px;">
       <form id="formComponentes" action="/turma/<%= turma?.id %>/componentes/adicionar" method="post" style="display:flex;flex-direction:column;gap:18px;">
         <h2>Adicionar Componentes</h2>
-        <label style="color:#7dd3fc;">
-          Tipo de Média:
+        <label style="color:#7dd3fc;">Tipo de Média:
           <select name="tipo_media" id="tipo_media" onchange="alteraTipoMedia()" style="margin-left:7px;padding:5px 12px;border-radius:7px;background:#1e293b;color:#cbd5e1;border:1px solid #38bdf8;">
             <option value="aritmetica">Aritmética</option>
             <option value="ponderada">Ponderada</option>
@@ -400,95 +188,53 @@
       </form>
     </div>
   </div>
-
-  <!-- MODAL: Editar Aluno + Notas -->
   <div id="modalEditarAluno" class="modal">
     <div class="modal-content" id="modalEditarAlunoContent"></div>
   </div>
-
-  <!-- MODAL: Editar Componente -->
   <div id="modalEditarComponente" class="modal">
     <div class="modal-content" id="modalEditarComponenteContent"></div>
   </div>
-
   <script>
     const turmaId = "<%= turma.id %>";
     const componentes = <%- JSON.stringify(componentes) %>;
     let modoEdicaoAtivo = false;
-
-    function abrirModalAluno() {
-      document.getElementById('modalAluno').classList.add('active');
-    }
-
-    function fecharModalAluno() {
-      document.getElementById('modalAluno').classList.remove('active');
-    }
-
-    function abrirModalComponente() {
-      document.getElementById('modalComponente').classList.add('active');
-      alteraTipoMedia();
-    }
-
-    function fecharModalComponente() {
-      document.getElementById('modalComponente').classList.remove('active');
-    }
-
+    function abrirModalAluno() { document.getElementById('modalAluno').classList.add('active'); }
+    function fecharModalAluno() { document.getElementById('modalAluno').classList.remove('active'); }
+    function abrirModalComponente() { document.getElementById('modalComponente').classList.add('active'); alteraTipoMedia(); }
+    function fecharModalComponente() { document.getElementById('modalComponente').classList.remove('active'); }
     function adicionarLinhaComponente() {
       const container = document.getElementById('componentesInputs');
       let idx = container.children.length;
       const linha = document.createElement('div');
       linha.className = "componenteLinha";
-      linha.style.display = "flex";
-      linha.style.gap = "12px";
-      linha.style.alignItems = "center";
-      linha.style.marginBottom = "7px";
-      linha.innerHTML = `<input type="text" required name="componentes[${idx}][nome]" placeholder="Nome do componente" style="padding:7px;width:170px;border-radius:7px;border:1.5px solid #38bdf8;background:#1e293b;color:#cbd5e1;">
-         <input type="number" required name="componentes[${idx}][peso]" placeholder="Peso" step="0.01" min="0" max="1" style="padding:7px;width:70px;border-radius:7px;border:1.5px solid #38bdf8;background:#1e293b;color:#cbd5e1;display:none;">
-         <button type="button" onclick="removerLinhaComponente(this)" style="background:#384254;color:#fb7185;border:none;padding:7px 13px;border-radius:7px;font-weight:700;cursor:pointer;">X</button>`;
+      linha.style.display = "flex"; linha.style.gap = "12px"; linha.style.alignItems = "center"; linha.style.marginBottom = "7px";
+      linha.innerHTML = `<input type="text" required name="componentes[${idx}][nome]" placeholder="Nome do componente" style="padding:7px;width:170px;border-radius:7px;border:1.5px solid #38bdf8;background:#1e293b;color:#cbd5e1;"> <input type="number" required name="componentes[${idx}][peso]" placeholder="Peso" step="0.01" min="0" max="1" style="padding:7px;width:70px;border-radius:7px;border:1.5px solid #38bdf8;background:#1e293b;color:#cbd5e1;display:none;"> <button type="button" onclick="removerLinhaComponente(this)" style="background:#384254;color:#fb7185;border:none;padding:7px 13px;border-radius:7px;font-weight:700;cursor:pointer;">X</button>`;
       container.appendChild(linha);
       alteraTipoMedia();
     }
-
-    function removerLinhaComponente(botao) {
-      botao.parentNode.remove();
-      alteraTipoMedia();
-    }
-
+    function removerLinhaComponente(botao) { botao.parentNode.remove(); alteraTipoMedia(); }
     function alteraTipoMedia() {
       const tipo = document.getElementById('tipo_media').value;
       document.querySelectorAll('#componentesInputs .componenteLinha').forEach(linha => {
         const inpPeso = linha.querySelector('input[type="number"]');
-        if (tipo === "ponderada") {
-          inpPeso.style.display = "";
-          inpPeso.required = true;
-        } else {
-          inpPeso.style.display = "none";
-          inpPeso.required = false;
-        }
+        if (tipo === "ponderada") { inpPeso.style.display = ""; inpPeso.required = true; }
+        else { inpPeso.style.display = "none"; inpPeso.required = false; }
       });
     }
-
     function toggleModoEdicao() {
       modoEdicaoAtivo = !modoEdicaoAtivo;
       const inputs = document.querySelectorAll('.notaInput');
       const btnModo = document.getElementById('btnModoEdicao');
       const btnSalvar = document.getElementById('btnSalvarTodos');
-      inputs.forEach(input => {
-        input.disabled = !modoEdicaoAtivo;
-      });
+      inputs.forEach(input => { input.disabled = !modoEdicaoAtivo; });
       if (modoEdicaoAtivo) {
-        btnModo.textContent = 'Cancelar Edição';
-        btnModo.style.background = '#fb7185';
-        btnModo.style.color = '#fff';
+        btnModo.textContent = 'Cancelar Edição'; btnModo.style.background = '#fb7185'; btnModo.style.color = '#fff';
         btnSalvar.style.display = 'inline-block';
       } else {
-        btnModo.textContent = 'Modo Edição';
-        btnModo.style.background = '';
-        btnModo.style.color = '';
+        btnModo.textContent = 'Modo Edição'; btnModo.style.background = ''; btnModo.style.color = '';
         btnSalvar.style.display = 'none';
       }
     }
-
     async function salvarTodasNotas() {
       const inputs = document.querySelectorAll('.notaInput');
       const notas = [];
@@ -500,88 +246,47 @@
         if (input.value) temMudancas = true;
         notas.push({ aluno_id: alunoId, componente_id: componenteId, nota: valor });
       });
-      if (!temMudancas) {
-        alert('Nenhuma nota foi alterada!');
-        return;
-      }
+      if (!temMudancas) { alert('Nenhuma nota foi alterada!'); return; }
       try {
         const response = await fetch(`/turma/${turmaId}/notas/batch`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ notas })
         });
         const result = await response.json();
-        if (result.success) {
-          alert('Notas salvas com sucesso!');
-          location.reload();
-        } else {
-          alert('Erro ao salvar notas: ' + (result.error || 'Erro desconhecido'));
-        }
-      } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao salvar notas');
-      }
+        if (result.success) { alert('Notas salvas com sucesso!'); location.reload(); }
+        else { alert('Erro ao salvar notas: ' + (result.error || 'Erro desconhecido')); }
+      } catch (error) { console.error('Erro:', error); alert('Erro ao salvar notas'); }
     }
-
     function abrirModalEditarAlunoBtn(tr) {
       const alunoId = tr.getAttribute('data-aluno-id');
       const alunoNome = tr.getAttribute('data-aluno-nome');
       const alunoRA = tr.getAttribute('data-aluno-ra');
       abrirModalEditarAluno(alunoId, alunoNome, alunoRA);
     }
-
     async function abrirModalEditarAluno(alunoId, alunoNome, alunoRA) {
       try {
         const response = await fetch(`/turma/${turmaId}/notas`);
         const data = await response.json();
         const notasAluno = {};
         (data.notas || []).forEach(nota => {
-          if (nota.aluno_id == alunoId) {
-            notasAluno[nota.componente_id] = nota.nota;
-          }
+          if (nota.aluno_id == alunoId) { notasAluno[nota.componente_id] = nota.nota; }
         });
-        let html = `<h2>Editar: ${alunoNome}</h2>
-          <form id="formEditarAluno" style="width:100%;display:flex;flex-direction:column;gap:15px;">
-            <div>
-              <label style="color:#7dd3fc;">RA:</label>
-              <input type="text" id="editRA" value="${alunoRA}" required style="padding:8px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;width:100%;">
-            </div>
-            <div>
-              <label style="color:#7dd3fc;">Nome:</label>
-              <input type="text" id="editNome" value="${alunoNome}" required style="padding:8px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;width:100%;">
-            </div>
-            <h3 style="color:#7dd3fc;margin-top:10px;margin-bottom:10px;">Notas:</h3>`;
+        let html = `<h2>Editar: ${alunoNome}</h2> <form id="formEditarAluno" style="width:100%;display:flex;flex-direction:column;gap:15px;"> <div> <label style="color:#7dd3fc;">RA:</label> <input type="text" id="editRA" value="${alunoRA}" required style="padding:8px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;width:100%;"> </div> <div> <label style="color:#7dd3fc;">Nome:</label> <input type="text" id="editNome" value="${alunoNome}" required style="padding:8px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;width:100%;"> </div> <h3 style="color:#7dd3fc;margin-top:10px;margin-bottom:10px;">Notas:</h3>`;
         componentes.forEach(c => {
-          html += `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-            <label style="color:#cbd5e1;flex:1;">${c.nome}:</label>
-            <input type="number" step="0.01" min="0" max="10" id="nota_${c.id}" value="${notasAluno[c.id] || ''}" style="width:80px;padding:6px;border-radius:5px;border:1px solid #38bdf8;background:#0f172a;color:#cbd5e1;text-align:center;" />
-          </div>`;
+          html += `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"> <label style="color:#cbd5e1;flex:1;">${c.nome}:</label> <input type="number" step="0.01" min="0" max="10" id="nota_${c.id}" value="${notasAluno[c.id] || ''}" style="width:80px;padding:6px;border-radius:5px;border:1px solid #38bdf8;background:#0f172a;color:#cbd5e1;text-align:center;" /> </div>`;
         });
-        html += `<div style="display:flex;gap:12px;margin-top:15px;justify-content:center;flex-wrap:wrap;">
-              <button type="button" class="plainButton" onclick="salvarEdicaoAluno(${alunoId})">Salvar</button>
-              <button type="button" class="plainButton" style="background:#fb7185;color:#fff;" onclick="deletarAluno(${turmaId}, ${alunoId}, '${alunoNome}')">Excluir Aluno</button>
-              <button type="button" class="plainButton" style="background:#384254;color:#7dd3fc;" onclick="fecharModalEditarAluno()">Cancelar</button>
-            </div>
-          </form>`;
+        html += `<div style="display:flex;gap:12px;margin-top:15px;justify-content:center;flex-wrap:wrap;"> <button type="button" class="plainButton" onclick="salvarEdicaoAluno(${alunoId})">Salvar</button> <button type="button" class="plainButton" style="background:#fb7185;color:#fff;" onclick="deletarAluno(${turmaId}, ${alunoId}, '${alunoNome}')">Excluir Aluno</button> <button type="button" class="plainButton" style="background:#384254;color:#7dd3fc;" onclick="fecharModalEditarAluno()">Cancelar</button> </div> </form>`;
         document.getElementById('modalEditarAlunoContent').innerHTML = html;
         document.getElementById('modalEditarAluno').classList.add('active');
-      } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao carregar dados do aluno');
-      }
+      } catch (error) { console.error('Erro:', error); alert('Erro ao carregar dados do aluno'); }
     }
-
     async function salvarEdicaoAluno(alunoId) {
       const nome = document.getElementById('editNome').value.trim();
       const RA = document.getElementById('editRA').value.trim();
-      if (!nome || !RA) {
-        alert('Nome e RA são obrigatórios!');
-        return;
-      }
+      if (!nome || !RA) { alert('Nome e RA são obrigatórios!'); return; }
       try {
         await fetch(`/api/alunos/${alunoId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ nome, RA })
         });
         const notas = [];
@@ -593,49 +298,31 @@
         });
         if (notas.length > 0) {
           await fetch(`/turma/${turmaId}/notas/batch`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ notas })
           });
         }
         alert('Aluno atualizado com sucesso!');
         location.reload();
-      } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao salvar alterações');
-      }
+      } catch (error) { console.error('Erro:', error); alert('Erro ao salvar alterações'); }
     }
-
-    function fecharModalEditarAluno() {
-      document.getElementById('modalEditarAluno').classList.remove('active');
-    }
-
+    function fecharModalEditarAluno() { document.getElementById('modalEditarAluno').classList.remove('active'); }
     function deletarAlunoBtn(tr) {
       const alunoId = tr.getAttribute('data-aluno-id');
       const alunoNome = tr.getAttribute('data-aluno-nome');
       deletarAluno(turmaId, alunoId, alunoNome);
     }
-
     async function deletarAluno(turmaId, alunoId, nome) {
       if (!confirm(`Deseja realmente remover o aluno "${nome}" da turma?`)) return;
       try {
         const response = await fetch(`/turma/${turmaId}/aluno/deletaAluno/${alunoId}`, {
-          method: 'DELETE',
-          headers: { 'Accept': 'application/json' }
+          method: 'DELETE', headers: { 'Accept': 'application/json' }
         });
         const result = await response.json();
-        if (result.success) {
-          alert('Aluno removido com sucesso!');
-          location.reload();
-        } else {
-          alert('Erro ao remover aluno: ' + (result.error || 'Erro desconhecido'));
-        }
-      } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao remover aluno');
-      }
+        if (result.success) { alert('Aluno removido com sucesso!'); location.reload(); }
+        else { alert('Erro ao remover aluno: ' + (result.error || 'Erro desconhecido')); }
+      } catch (error) { console.error('Erro:', error); alert('Erro ao remover aluno'); }
     }
-
     function abrirModalEditarComponenteBtn(th) {
       const componenteId = th.getAttribute('data-comp-id');
       const componenteNome = th.getAttribute('data-comp-nome');
@@ -643,94 +330,46 @@
       const tipoMedia = th.getAttribute('data-comp-tipo');
       abrirModalEditarComponente(componenteId, componenteNome, componentePeso, tipoMedia);
     }
-
     async function abrirModalEditarComponente(componenteId, componenteNome, componentePeso, tipoMedia) {
-      let html = `<h2>Editar Componente</h2>
-        <form id="formEditarComponente" style="width:100%;display:flex;flex-direction:column;gap:15px;">
-          <div>
-            <label style="color:#7dd3fc;">Nome do Componente:</label>
-            <input type="text" id="editCompNome" value="${componenteNome}" required style="padding:8px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;width:100%;">
-          </div>
-          <div>
-            <label style="color:#7dd3fc;">Tipo de Média:</label>
-            <select id="editCompTipo" style="padding:8px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;width:100%;" onchange="togglePesoEdit()">
-              <option value="aritmetica" ${tipoMedia === 'aritmetica' ? 'selected' : ''}>Aritmética</option>
-              <option value="ponderada" ${tipoMedia === 'ponderada' ? 'selected' : ''}>Ponderada</option>
-            </select>
-          </div>
-          <div id="divPesoEdit" style="display:${tipoMedia === 'ponderada' ? 'block' : 'none'};">
-            <label style="color:#7dd3fc;">Peso (0 a 1):</label>
-            <input type="number" step="0.01" min="0" max="1" id="editCompPeso" value="${componentePeso || ''}" style="padding:8px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;width:100%;">
-          </div>
-          <div style="display:flex;gap:12px;margin-top:15px;justify-content:center;flex-wrap:wrap;">
-            <button type="button" class="plainButton" onclick="salvarEdicaoComponente(${componenteId})">Salvar</button>
-            <button type="button" class="plainButton" style="background:#fb7185;color:#fff;" onclick="deletarComponente(${turmaId}, ${componenteId})">Excluir</button>
-            <button type="button" class="plainButton" style="background:#384254;color:#7dd3fc;" onclick="fecharModalEditarComponente()">Cancelar</button>
-          </div>
-        </form>`;
+      let html = `<h2>Editar Componente</h2> <form id="formEditarComponente" style="width:100%;display:flex;flex-direction:column;gap:15px;"> <div> <label style="color:#7dd3fc;">Nome do Componente:</label> <input type="text" id="editCompNome" value="${componenteNome}" required style="padding:8px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;width:100%;"> </div> <div> <label style="color:#7dd3fc;">Tipo de Média:</label> <select id="editCompTipo" style="padding:8px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;width:100%;" onchange="togglePesoEdit()"> <option value="aritmetica" ${tipoMedia === 'aritmetica' ? 'selected' : ''}>Aritmética</option> <option value="ponderada" ${tipoMedia === 'ponderada' ? 'selected' : ''}>Ponderada</option> </select> </div> <div id="divPesoEdit" style="display:${tipoMedia === 'ponderada' ? 'block' : 'none'};"> <label style="color:#7dd3fc;">Peso (0 a 1):</label> <input type="number" step="0.01" min="0" max="1" id="editCompPeso" value="${componentePeso || ''}" style="padding:8px;border-radius:7px;border:1px solid #38bdf8;background:#1e293b;color:#cbd5e1;width:100%;"> </div> <div style="display:flex;gap:12px;margin-top:15px;justify-content:center;flex-wrap:wrap;"> <button type="button" class="plainButton" onclick="salvarEdicaoComponente(${componenteId})">Salvar</button> <button type="button" class="plainButton" style="background:#fb7185;color:#fff;" onclick="deletarComponente(${turmaId}, ${componenteId})">Excluir</button> <button type="button" class="plainButton" style="background:#384254;color:#7dd3fc;" onclick="fecharModalEditarComponente()">Cancelar</button> </div> </form>`;
       document.getElementById('modalEditarComponenteContent').innerHTML = html;
       document.getElementById('modalEditarComponente').classList.add('active');
     }
-
-    function fecharModalEditarComponente() {
-      document.getElementById('modalEditarComponente').classList.remove('active');
-    }
-
+    function fecharModalEditarComponente() { document.getElementById('modalEditarComponente').classList.remove('active'); }
     function togglePesoEdit() {
       const tipo = document.getElementById('editCompTipo').value;
       const divPeso = document.getElementById('divPesoEdit');
       divPeso.style.display = tipo === 'ponderada' ? 'block' : 'none';
     }
-
     async function salvarEdicaoComponente(componenteId) {
       const nome = document.getElementById('editCompNome').value.trim();
       const tipo_media = document.getElementById('editCompTipo').value;
       const peso = tipo_media === 'ponderada' ? parseFloat(document.getElementById('editCompPeso').value) : null;
-      if (!nome) {
-        alert('Nome do componente é obrigatório!');
-        return;
-      }
+      if (!nome) { alert('Nome do componente é obrigatório!'); return; }
       if (tipo_media === 'ponderada' && (!peso || peso < 0 || peso > 1)) {
         alert('Peso deve estar entre 0 e 1 para média ponderada!');
         return;
       }
       try {
         const response = await fetch(`/api/componentes/${componenteId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ nome, tipo_media, peso })
         });
         const result = await response.json();
-        if (result.success) {
-          alert('Componente atualizado com sucesso!');
-          location.reload();
-        } else {
-          alert('Erro ao atualizar componente: ' + (result.error || 'Erro desconhecido'));
-        }
-      } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao salvar alterações');
-      }
+        if (result.success) { alert('Componente atualizado com sucesso!'); location.reload(); }
+        else { alert('Erro ao atualizar componente: ' + (result.error || 'Erro desconhecido')); }
+      } catch (error) { console.error('Erro:', error); alert('Erro ao salvar alterações'); }
     }
-
     async function deletarComponente(turmaId, componenteId) {
       if (!confirm('Deseja realmente excluir este componente? Todas as notas relacionadas serão perdidas!')) return;
       try {
         const response = await fetch(`/turma/${turmaId}/componente/${componenteId}`, {
-          method: 'DELETE',
-          headers: { 'Accept': 'application/json' }
+          method: 'DELETE', headers: { 'Accept': 'application/json' }
         });
         const result = await response.json();
-        if (result.success) {
-          alert('Componente removido com sucesso!');
-          location.reload();
-        } else {
-          alert('Erro ao remover componente: ' + (result.error || 'Erro desconhecido'));
-        }
-      } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao remover componente');
-      }
+        if (result.success) { alert('Componente removido com sucesso!'); location.reload(); }
+        else { alert('Erro ao remover componente: ' + (result.error || 'Erro desconhecido')); }
+      } catch (error) { console.error('Erro:', error); alert('Erro ao remover componente'); }
     }
   </script>
 </body>

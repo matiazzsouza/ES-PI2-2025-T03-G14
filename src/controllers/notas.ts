@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { pool } from "../database/database-fixed";
+import { calcularMediaAlunoInterna, salvarMediaInterna } from "./medias";
 
 // Buscar todas as notas da turma
 export async function buscarNotasTurma(req: Request, res: Response) {
@@ -11,7 +12,6 @@ export async function buscarNotasTurma(req: Request, res: Response) {
   }
 
   try {
-    // Busca notas de todos os alunos da turma
     const [notas]: any = await pool.query(`
       SELECT n.id, n.aluno_id, n.componente_id, n.nota
       FROM notas n
@@ -37,20 +37,17 @@ export async function salvarNotaIndividual(req: Request, res: Response) {
   }
 
   try {
-    // Verifica se nota já existe
     const [existente]: any = await pool.query(
       "SELECT id FROM notas WHERE aluno_id = ? AND componente_id = ?",
       [alunoId, componente_id]
     );
 
     if (existente.length > 0) {
-      // UPDATE
       await pool.query(
         "UPDATE notas SET nota = ? WHERE aluno_id = ? AND componente_id = ?",
         [nota, alunoId, componente_id]
       );
     } else {
-      // INSERT
       await pool.query(
         "INSERT INTO notas (aluno_id, componente_id, nota) VALUES (?, ?, ?)",
         [alunoId, componente_id, nota]
@@ -66,8 +63,8 @@ export async function salvarNotaIndividual(req: Request, res: Response) {
 
 // Salvar notas em lote (modo edição em massa)
 export async function salvarNotasLote(req: Request, res: Response) {
-  const { turmaId } = req.params;
-  const { notas } = req.body; // Array de { aluno_id, componente_id, nota }
+  const turmaId = Number(req.params.turmaId);
+  const { notas } = req.body;
   const user = (req.session as any).user;
 
   if (!user || !user.id) {
@@ -78,20 +75,17 @@ export async function salvarNotasLote(req: Request, res: Response) {
     for (const notaItem of notas) {
       const { aluno_id, componente_id, nota } = notaItem;
 
-      // Verifica se existe
       const [existente]: any = await pool.query(
         "SELECT id FROM notas WHERE aluno_id = ? AND componente_id = ?",
         [aluno_id, componente_id]
       );
 
       if (existente.length > 0) {
-        // UPDATE
         await pool.query(
           "UPDATE notas SET nota = ? WHERE aluno_id = ? AND componente_id = ?",
           [nota, aluno_id, componente_id]
         );
       } else {
-        // INSERT
         await pool.query(
           "INSERT INTO notas (aluno_id, componente_id, nota) VALUES (?, ?, ?)",
           [aluno_id, componente_id, nota]
@@ -99,9 +93,29 @@ export async function salvarNotasLote(req: Request, res: Response) {
       }
     }
 
-    res.json({ success: true, message: "Notas salvas com sucesso" });
+    // Gera array de IDs únicos e garantindo tipagem number
+    const alunosIds: number[] = Array.from(
+      new Set(
+        (notas as { aluno_id: number }[]).map(n => Number(n.aluno_id))
+      )
+    ).filter(id => typeof id === "number" && !isNaN(id) && id > 0);
+
+    // Atualiza médias dos alunos alterados
+    for (const alunoId of alunosIds) {
+      const id = Number(alunoId);
+      const result = await calcularMediaAlunoInterna(id, turmaId);
+      
+      // Proteção: só salva se a média for um número válido
+      if (result.success && !isNaN(result.media) && result.media !== null && result.media !== undefined) {
+        await salvarMediaInterna(id, turmaId, result.media);
+      } else {
+        console.warn(`⚠️ Média inválida para aluno ${id}: ${result.media}`);
+      }
+    }
+
+    return res.json({ success: true, message: "Notas e médias salvas com sucesso" });
   } catch (error) {
     console.error("Erro ao salvar notas em lote:", error);
-    res.status(500).json({ error: "Erro ao salvar notas" });
+    return res.status(500).json({ error: "Erro ao salvar notas" });
   }
 }
