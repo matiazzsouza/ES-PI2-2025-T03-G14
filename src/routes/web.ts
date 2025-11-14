@@ -1,3 +1,8 @@
-import { exportarCSV } from "../controllers/csv";
+import express from "express";
+import * as csvController from "../controllers/csv";
 
-router.get("/export/:tabela", exportarCSV);
+const router = express.Router();
+
+router.get("/exportar-csv", csvController.exportarCSV);
+
+export default router;
