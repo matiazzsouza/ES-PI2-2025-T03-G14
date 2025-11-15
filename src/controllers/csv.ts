@@ -124,7 +124,7 @@ export async function exportarAlunosCSV(req: Request, res: Response) {
   });
 
   // Cabeçalhos
-  const fields = ['nome', 'RA', ...compNomes, 'media'];
+  const fields = ['RA', 'nome', ...compNomes, 'media'];
 
   try {
     const csvContent = await parseAsync(alunosCsv, { fields });
