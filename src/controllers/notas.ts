@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { pool } from "../database/database-fixed";
 import { calcularMediaAlunoInterna, salvarMediaInterna } from "./medias";
 
-// Buscar todas as notas da turma
 export async function buscarNotasTurma(req: Request, res: Response) {
   const { turmaId } = req.params;
   const user = (req.session as any).user;

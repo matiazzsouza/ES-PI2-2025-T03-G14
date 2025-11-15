@@ -62,7 +62,7 @@ import {
   editarTurma,
   excluirTurma
 } from './controllers/turmas';
-
+ 
 import {
   exibirAddTurmas,
   criarMultiplasTurmas
@@ -545,7 +545,14 @@ app.put("/api/alunos/:alunoId", editarAluno);
 
 //? :::: IMPORTAÇÃO :::::
 
-//app.post("/turma/:id/alunos/importarAlunosCSV", upload.single("csvFile"), multerErrorHandler, importarAlunosCSV);
+app.post("/turma/:id/alunos/importarAlunosCSV", upload.single("csvFile"), multerErrorHandler, importarAlunosCSV);
+
+//? :::: EXPORTAÇÃO :::::
+
+app.get("/turma/:id/alunos/exportarAlunosCSV", exportarAlunosCSV);
+
+
+
 
 //! COMPONENTES ---
 app.post("/turma/:id/componentes/adicionar", adicionarComponentes);

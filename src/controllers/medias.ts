@@ -46,6 +46,7 @@ export async function calcularMediaAlunoInterna(alunoId: number, turmaId: number
   }
   
   media = Math.round(media * 100) / 100;
+  media = Math.min(media, 10);
 
   return { media, tipo: tipoMedia, success: true };
 }
