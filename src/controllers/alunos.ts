@@ -130,6 +130,15 @@ export async function deletaAluno(req: Request, res: Response) {
       [alunoId, turmaId]
     );
 
+  // Após remover o aluno/turma
+  const [restantes]: any = await pool.query("SELECT COUNT(*) as total FROM aluno_turma WHERE turma_id = ?", [turmaId]);
+
+  if (restantes[0].total === 0) {
+    // Remove todos os componentes ligados à turma
+    await pool.query("DELETE FROM componentes WHERE turma_id = ?", [turmaId]);
+  }
+
+
     return res.status(200).json({ success: true, message: "Aluno removido com sucesso!" });
   } catch (err) {
     console.error("❌ Erro ao remover aluno:", err);

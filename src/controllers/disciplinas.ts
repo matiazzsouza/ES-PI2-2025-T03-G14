@@ -1,11 +1,10 @@
-// ! ROTAS PARA AS ABAS DE DISCIPLINA
-
 import { Request, Response } from 'express';
 import { pool } from '../database/database-fixed';
 
+// Exibir formulário de adicionar disciplina
 export async function exibirAddDisciplina(req: Request, res: Response) {
   const user = (req.session as any).user;
-  
+
   if (!user || !user.id) {
     return res.redirect("/auth/login");
   }
@@ -19,7 +18,7 @@ export async function exibirAddDisciplina(req: Request, res: Response) {
     );
 
     if (cursos.length === 0) {
-      return res.status(404).render("disciplinas/add-disciplinas", { 
+      return res.status(404).render("disciplinas/add-disciplinas", {
         title: "Curso não encontrado",
         user: user,
         curso: null,
@@ -53,9 +52,10 @@ export async function exibirAddDisciplina(req: Request, res: Response) {
   }
 }
 
+// Exibir todas disciplinas do curso
 export async function exibirDisciplinas(req: Request, res: Response) {
   const user = (req.session as any).user;
-  
+
   if (!user || !user.id) {
     return res.redirect("/auth/login");
   }
@@ -63,7 +63,6 @@ export async function exibirDisciplinas(req: Request, res: Response) {
   const cursoId = req.params.id;
 
   try {
-    // Buscar curso com instituição
     const [cursos]: any = await pool.query(
       `SELECT c.id, c.nome, c.instituicao_id, i.nome as instituicao_nome
        FROM cursos c 
@@ -73,7 +72,7 @@ export async function exibirDisciplinas(req: Request, res: Response) {
     );
 
     if (cursos.length === 0) {
-      return res.status(404).render("disciplinas/disciplinas", { 
+      return res.status(404).render("disciplinas/disciplinas", {
         title: "Curso não encontrado",
         user: user,
         curso: null,
@@ -91,7 +90,6 @@ export async function exibirDisciplinas(req: Request, res: Response) {
       nome: curso.instituicao_nome
     };
 
-    // Buscar disciplinas com suas turmas
     const [disciplinasComTurmas]: any = await pool.query(
       `SELECT d.id, d.nome, d.sigla, d.codigo, d.periodo, d.created_at,
               t.id as turma_id, t.nome as turma_nome, t.dia_semana, t.horario, t.local
@@ -102,12 +100,10 @@ export async function exibirDisciplinas(req: Request, res: Response) {
       [cursoId]
     );
 
-    // Processar para agrupar turmas por disciplina
     const disciplinasMap = new Map();
-    
     disciplinasComTurmas.forEach((row: any) => {
       const disciplinaId = row.id;
-      
+
       if (!disciplinasMap.has(disciplinaId)) {
         disciplinasMap.set(disciplinaId, {
           id: row.id,
@@ -119,8 +115,7 @@ export async function exibirDisciplinas(req: Request, res: Response) {
           turmas: []
         });
       }
-      
-      // Se existe uma turma associada, adiciona à disciplina
+
       if (row.turma_id) {
         disciplinasMap.get(disciplinaId).turmas.push({
           id: row.turma_id,
@@ -160,9 +155,9 @@ export async function exibirDisciplinas(req: Request, res: Response) {
   }
 }
 
+// Criar disciplina
 export async function criarDisciplina(req: Request, res: Response) {
   const user = (req.session as any).user;
-  
   if (!user || !user.id) {
     return res.redirect("/auth/login");
   }
@@ -175,7 +170,6 @@ export async function criarDisciplina(req: Request, res: Response) {
       "SELECT id, nome FROM cursos WHERE id = ? AND user_id = ?",
       [cursoId, user.id]
     );
-
     if (cursos.length === 0) {
       return res.status(403).render("disciplinas/add-disciplinas", {
         title: "Acesso Negado",
@@ -209,7 +203,7 @@ export async function criarDisciplina(req: Request, res: Response) {
 
   } catch (error: any) {
     console.error("Erro ao criar disciplina:", error);
-    
+
     const [cursos]: any = await pool.query(
       "SELECT id, nome FROM cursos WHERE id = ? AND user_id = ?",
       [cursoId, user.id]
@@ -250,9 +244,9 @@ export async function criarDisciplina(req: Request, res: Response) {
   }
 }
 
+// Editar disciplina
 export async function editarDisciplina(req: Request, res: Response) {
   const user = (req.session as any).user;
-  
   if (!user || !user.id) {
     return res.status(401).json({ error: "Não autorizado." });
   }
@@ -282,7 +276,7 @@ export async function editarDisciplina(req: Request, res: Response) {
 
   } catch (error: any) {
     console.error("Erro ao editar disciplina:", error);
-    
+
     if (error.code === "ER_DUP_ENTRY") {
       return res.status(400).json({ error: "Já existe uma disciplina com este código ou sigla." });
     }
@@ -291,96 +285,76 @@ export async function editarDisciplina(req: Request, res: Response) {
   }
 }
 
-
+// EXCLUIR DISCIPLINA (com confirmação via frontend)
 export async function excluirDisciplina(req: Request, res: Response) {
   const user = (req.session as any).user;
-  
   if (!user || !user.id) {
     return res.status(401).json({ error: "Não autorizado." });
   }
 
-  const { id: disciplinaId } = req.params;
+  const disciplinaId = Number(req.params.id);
   const body = req.body || {};
   const confirmacao = body.confirmacao;
 
-  try {
-    const [disciplinas]: any = await pool.query(
-      "SELECT id, nome, curso_id FROM disciplinas WHERE id = ? AND user_id = ?",
+  // Validar disciplina e vínculo do usuário
+  const [disciplinas]: any = await pool.query(
+    "SELECT id, nome, curso_id FROM disciplinas WHERE id = ? AND user_id = ?",
+    [disciplinaId, user.id]
+  );
+  if (disciplinas.length === 0) {
+    return res.status(403).json({ error: "Acesso negado." });
+  }
+  const disciplina = disciplinas[0];
+  const nomeDisciplina = disciplina.nome;
+
+  // Verificar vínculo com turmas
+  const [turmas]: any = await pool.query(
+    "SELECT COUNT(*) as total FROM turmas WHERE disciplina_id = ?",
+    [disciplinaId]
+  );
+  const totalTurmas = turmas[0].total;
+
+  if (totalTurmas > 0) {
+    return res.status(400).json({ 
+      success: false,
+      error: `Não é possível excluir a disciplina "${nomeDisciplina}": existem ${totalTurmas} turma(s) vinculada(s). Remova todas as turmas antes de excluir.`
+    });
+  }
+
+  if (confirmacao === undefined) {
+    return res.status(200).json({
+      requireConfirmation: true,
+      message: `Tem certeza que deseja excluir a disciplina "${nomeDisciplina}"? Esta ação não pode ser desfeita.`,
+      disciplina: {
+        id: disciplina.id,
+        nome: nomeDisciplina,
+        curso_id: disciplina.curso_id
+      }
+    });
+  }
+
+  if (confirmacao === true) {
+    await pool.query(
+      "DELETE FROM disciplinas WHERE id = ? AND user_id = ?",
       [disciplinaId, user.id]
     );
-
-    if (disciplinas.length === 0) {
-      return res.status(403).json({ error: "Acesso negado." });
-    }
-
-    const disciplina = disciplinas[0];
-    const nomeDisciplina = disciplina.nome;
-
-    // ✅ VERIFICAR SE TEM TURMAS
-    const [turmas]: any = await pool.query(
-      "SELECT COUNT(*) as total FROM turmas WHERE disciplina_id = ?",
-      [disciplinaId]
-    );
-
-    const totalTurmas = turmas[0].total;
-
-    if (totalTurmas > 0) {
-      return res.status(400).json({ 
-        success: false,
-        error: "Não é possível excluir disciplina com turmas associadas.",
-        message: `A disciplina "${nomeDisciplina}" possui ${totalTurmas} turma(s) cadastrada(s). Exclua todas as turmas primeiro.`
-      });
-    }
-
-    // ✅ PRIMEIRA CHAMADA - SEM CONFIRMAÇÃO
-    if (confirmacao === undefined) {
-      return res.status(200).json({
-        requireConfirmation: true,
-        message: `Tem certeza que deseja excluir a disciplina "${nomeDisciplina}"?`,
-        disciplina: {
-          id: disciplina.id,
-          nome: nomeDisciplina,
-          curso_id: disciplina.curso_id
-        }
-      });
-    }
-
-    // ✅ SEGUNDA CHAMADA - COM CONFIRMAÇÃO
-    if (confirmacao === true) {
-      await pool.query(
-        "DELETE FROM disciplinas WHERE id = ? AND user_id = ?",
-        [disciplinaId, user.id]
-      );
-
-      return res.json({ 
-        success: true, 
-        message: `Disciplina "${nomeDisciplina}" excluída com sucesso!`,
-        redirect: `/curso/${disciplina.curso_id}/disciplinas?success=Disciplina excluída com sucesso!`
-      });
-    } else {
-      return res.status(400).json({ 
-        error: "Confirmação inválida." 
-      });
-    }
-
-  } catch (error) {
-    console.error("Erro ao excluir disciplina:", error);
-    res.status(500).json({ error: "Erro ao excluir disciplina." });
+    return res.json({ 
+      success: true, 
+      message: `Disciplina "${nomeDisciplina}" excluída com sucesso!`
+    });
+  } else {
+    return res.status(400).json({ error: "Confirmação inválida." });
   }
 }
 
-// 🔥 ADICIONE ESTAS 2 FUNÇÕES NO FINAL DO SEU disciplinas.ts
-
+// Listar todas disciplinas (API)
 export async function listarTodasDisciplinas(req: Request, res: Response) {
   const user = (req.session as any).user;
-  
   if (!user || !user.id) {
     return res.status(401).json({ error: "Não autorizado." });
   }
 
   try {
-    console.log('📥 GET /api/disciplinas - User ID:', user.id);
-    
     const [disciplinas]: any = await pool.query(`
       SELECT d.*, c.nome as curso_nome, i.nome as instituicao_nome
       FROM disciplinas d
@@ -390,18 +364,16 @@ export async function listarTodasDisciplinas(req: Request, res: Response) {
       ORDER BY d.nome
     `, [user.id]);
 
-    console.log(`✅ Encontradas ${disciplinas.length} disciplinas para o usuário ${user.id}`);
     res.json(disciplinas);
-    
+
   } catch (error) {
-    console.error('❌ Erro ao listar disciplinas:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 }
 
+// Buscar disciplina por id (API)
 export async function obterDisciplinaPorId(req: Request, res: Response) {
   const user = (req.session as any).user;
-  
   if (!user || !user.id) {
     return res.status(401).json({ error: "Não autorizado." });
   }
@@ -409,8 +381,6 @@ export async function obterDisciplinaPorId(req: Request, res: Response) {
   const disciplinaId = parseInt(req.params.id);
 
   try {
-    console.log(`📥 GET /api/disciplinas/${disciplinaId} - User ID: ${user.id}`);
-
     const [disciplinas]: any = await pool.query(`
       SELECT d.*, c.nome as curso_nome, i.nome as instituicao_nome
       FROM disciplinas d
@@ -418,17 +388,12 @@ export async function obterDisciplinaPorId(req: Request, res: Response) {
       JOIN instituicoes i ON c.instituicao_id = i.id
       WHERE d.id = ? AND d.user_id = ?
     `, [disciplinaId, user.id]);
-
     if (disciplinas.length === 0) {
-      console.log(`❌ Disciplina ${disciplinaId} não encontrada para o usuário ${user.id}`);
       return res.status(404).json({ error: 'Disciplina não encontrada' });
     }
-
-    console.log('✅ Disciplina encontrada:', disciplinas[0]);
     res.json(disciplinas[0]);
-    
+
   } catch (error) {
-    console.error('❌ Erro ao buscar disciplina:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 }

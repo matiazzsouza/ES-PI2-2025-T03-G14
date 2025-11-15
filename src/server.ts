@@ -514,8 +514,6 @@ app.post("/api/instituicoes/:id/cursos", criarCurso);
   app.get("/curso/:id/disciplinas", exibirDisciplinas);
   app.get("/curso/:id/disciplinas/add", exibirAddDisciplina);
   app.post("/curso/:id/disciplinas/add", criarDisciplina);
-
-
   app.get("/api/disciplinas", listarTodasDisciplinas);
   app.get("/api/disciplinas/:id", obterDisciplinaPorId);
   app.put("/api/disciplinas/:id", editarDisciplina);
