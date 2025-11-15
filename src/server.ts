@@ -541,14 +541,10 @@ app.post("/turma/:id/alunos", AdicionarAluno);
 app.delete("/turma/:turmaId/aluno/deletaAluno/:alunoId", deletaAluno);
 app.put("/api/alunos/:alunoId", editarAluno);
 
-
-
 //? :::: IMPORTAÇÃO :::::
-
 app.post("/turma/:id/alunos/importarAlunosCSV", upload.single("csvFile"), multerErrorHandler, importarAlunosCSV);
 
 //? :::: EXPORTAÇÃO :::::
-
 app.get("/turma/:id/alunos/exportarAlunosCSV", exportarAlunosCSV);
 
 

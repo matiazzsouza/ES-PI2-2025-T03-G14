@@ -56,55 +56,85 @@ export async function importarAlunosCSV(req: Request, res: Response) {
     });
 }
 
-  export async function exportarAlunosCSV(req: Request, res: Response) {
-    const turmaId = req.params.turmaId; // Supondo .../api/turma/:turmaId/exportar-csv
-
-    // Busca componentes de nota para a turma
-    const [componentes]: any = await pool.query(
-      "SELECT id, sigla FROM componentes_nota WHERE turma_id = ? ORDER BY id",
-      [turmaId]
-    );
-    const siglas: string[] = componentes.map((comp: any) => comp.sigla);
-
-    // Busca alunos da turma
-    const [alunos]: any = await pool.query(
-      "SELECT id, nome FROM alunos WHERE turma_id = ? ORDER BY nome",
-      [turmaId]
-    );
-
-    // Busca todas as notas lançadas dos alunos
-    const alunoIds = alunos.map((aluno: any) => aluno.id);
-    const [notas]: any = alunoIds.length
-      ? await pool.query(
-          `SELECT n.aluno_id, n.componente_nota_id, n.nota, c.sigla 
-          FROM notas n
-          JOIN componentes_nota c ON c.id = n.componente_nota_id
-          WHERE n.aluno_id IN (${alunoIds.map(() => "?").join(",")})`, alunoIds)
-      : [ [] ];
-
-    // Monta cada aluno com notas (linhas do CSV)
-    const alunosCsv = alunos.map((aluno: any) => {
-      const linha: any = { id: aluno.id, nome: aluno.nome };
-      siglas.forEach(sigla => {
-        const notaObj = notas.find(
-          (n: any) => n.aluno_id === aluno.id && n.sigla === sigla
-        );
-        linha[sigla] = notaObj ? notaObj.nota : "";
-      });
-      return linha;
-    });
-
-    const fields = ["id", "nome", ...siglas];
-
-    try {
-      const csvContent = await parseAsync(alunosCsv, { fields });
-      const agora = new Date();
-      const nomeArquivo = `${agora.toISOString().slice(0,10)}_${agora.getTime()}-TURMA${turmaId}.csv`;
-
-      res.header("Content-Type", "text/csv");
-      res.attachment(nomeArquivo);
-      res.send(csvContent);
-    } catch (error: any) {
-      res.status(500).json({ error: "Erro ao exportar CSV", detalhes: error.message });
-    }
+export async function exportarAlunosCSV(req: Request, res: Response) {
+  const turmaId = req.params.id;
+  if (!turmaId) {
+    return res.status(400).send('Parametro turmaId ausente.');
   }
+
+  // Buscar componentes desta turma
+  const [componentes]: any = await pool.query(
+    'SELECT id, nome FROM componentes WHERE turma_id = ? ORDER BY id',
+    [turmaId]
+  );
+  const compIds = componentes.map((c: any) => c.id);
+  const compNomes = componentes.map((c: any) => c.nome);
+
+  // Buscar aluno_ids pela tabela de relacionamento aluno_turma
+  const [alunoTurmas]: any = await pool.query(
+    'SELECT aluno_id FROM aluno_turma WHERE turma_id = ?',
+    [turmaId]
+  );
+  const alunoIds = alunoTurmas.map((at: any) => at.aluno_id);
+  if (alunoIds.length === 0) {
+    return res.status(200).send('Nenhum aluno cadastrado para a turma.');
+  }
+
+  // Buscar dados dos alunos
+  const [alunos]: any = await pool.query(
+    `SELECT id, RA, nome FROM alunos WHERE id IN (${alunoIds.map(() => '?').join(',')}) ORDER BY nome`,
+    alunoIds
+  );
+
+  // Buscar todas as notas desses alunos e componentes
+  const [notas]: any = alunoIds.length && compIds.length
+    ? await pool.query(
+        `SELECT aluno_id, componente_id, nota FROM notas
+         WHERE aluno_id IN (${alunoIds.map(() => '?').join(',')})
+           AND componente_id IN (${compIds.map(() => '?').join(',')})`,
+        [...alunoIds, ...compIds]
+      )
+    : [[]];
+  const notaMap: Record<string, string> = {};
+  for (const n of notas) {
+    notaMap[`${n.aluno_id}-${n.componente_id}`] = n.nota;
+  }
+
+  // Buscar médias dos alunos na turma
+  const [medias]: any = alunoIds.length
+    ? await pool.query(
+        `SELECT aluno_id, media FROM medias WHERE turma_id = ? AND aluno_id IN (${alunoIds.map(() => '?').join(',')})`,
+        [turmaId, ...alunoIds]
+      )
+    : [[]];
+  const mediasMap = Object.fromEntries(medias.map((m: any) => [m.aluno_id, m.media]));
+
+  // Monta cada linha para o CSV
+  const alunosCsv = alunos.map((aluno: any) => {
+    const linha: any = {
+      nome: aluno.nome,
+      RA: aluno.RA
+    };
+    compIds.forEach((compId: number, idx: number) => {
+      const notaValor = notaMap[`${aluno.id}-${compId}`];
+      linha[compNomes[idx]] = typeof notaValor !== 'undefined' ? notaValor : '';
+    });
+    linha.media = mediasMap[aluno.id] !== undefined ? Number(mediasMap[aluno.id]).toFixed(2) : '';
+    return linha;
+  });
+
+  // Cabeçalhos
+  const fields = ['nome', 'RA', ...compNomes, 'media'];
+
+  try {
+    const csvContent = await parseAsync(alunosCsv, { fields });
+    const agora = new Date();
+    const nomeArquivo = `${agora.toISOString().slice(0,10)}_${agora.getTime()}-TURMA${turmaId}.csv`;
+
+    res.header('Content-Type', 'text/csv');
+    res.attachment(nomeArquivo);
+    res.send(csvContent);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Erro ao exportar CSV', detalhes: error.message });
+  }
+}

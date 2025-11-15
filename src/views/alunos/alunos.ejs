@@ -52,12 +52,12 @@
   <div class="topBar">
     <div class="roomName"><%= turma?.nome || 'Turma não encontrada' %></div>
     <div class="actionButtons">
-      <form action="/turma/<%= turma?.id %>/alunos/importarAlunosCSV" method="post" enctype="multipart/form-data" style="display:inline-block;">
+      <form action="/turma/<%= turma?.id %>/alunos/importarAlunosCSV" method= "post" enctype="multipart/form-data" style="display:inline-block;">
         <label for="csvFile" class="iconButton" style="cursor:pointer;">Importar CSV
           <input type="file" id="csvFile" name="csvFile" accept=".csv" style="display:none" onchange="this.form.submit()">
         </label>
       </form>
-      <form action="/turma/<%= turma?.id %>/exportar" method="get" style="display:inline-block;">
+      <form action="/turma/<%= turma?.id %>/alunos/exportarAlunosCSV" method= "get" style="display:inline-block;">
         <button class="iconButton" type="submit">Exportar</button>
       </form>
     </div>
