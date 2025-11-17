@@ -15,7 +15,6 @@ export const transporter = nodemailer.createTransport({
 });
 
 
-// 🔥 ENVIA EMAIL DE REDEFINIÇÃO
 export async function sendPasswordResetEmail(userEmail: string, token: string): Promise<boolean> {
   try {
     console.log("🔄 Conectando ao Mailgun...");
